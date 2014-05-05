@@ -1,0 +1,119 @@
+{# 
+/**
+ * Operator New Template
+ *
+ * @author rutoru
+ * @package Runa-CCA
+ */
+#}
+{% extends "Main/config_frame.twig" %}
+{% block message %}
+    {% autoescape true %}
+
+        <div class="page-header" id="banner">
+            <div class="row">
+                <div class="col-lg-12">
+                    {% if flag == "CHANGE" %}
+                    <h2>オペレータ変更・削除</h2>
+                    {% else %}
+                    <h2>オペレータ登録</h2>
+                    {% endif %}
+                    <form class="form-horizontal" action="/runa-cca/conf/opadd" method="POST">
+                      <fieldset>
+                        <div class="form-group">
+                          <label for="operator_id" class="col-lg-2 control-label">オペレータID</label>
+                          <div class="col-lg-10">
+                            {% if flag == "CHANGE" %}
+                            <input type="text" class="form-control" name="operator_id" placeholder="オペレータID" value="{{operators.operator_id}}" readonly="readonly">
+                            {{validation.operator_id}}
+                            {% else %}
+                            <input type="text" class="form-control" name="operator_id" placeholder="オペレータID" value="{{operators.operator_id}}" required>
+                            {{validation.operator_id}}
+                            {% endif %}
+                          </div>
+                        </div>
+                        {% if flag != "CHANGE" %}
+                        <div class="form-group">
+                          <label for="password" class="col-lg-2 control-label">パスワード</label>
+                          <div class="col-lg-10">
+                            <input type="password" class="form-control" name="password" placeholder="パスワード" required>
+                          </div>
+                        </div>
+                        {% endif %}
+                        <div class="form-group">
+                          <label for="last_name" class="col-lg-2 control-label">名字</label>
+                          <div class="col-lg-10">
+                            <input type="text" class="form-control" name="last_name" placeholder="名字" required value="{{operators.last_name}}">
+                            {{validation.last_name}}
+                          </div>
+                        </div>
+                        <div class="form-group">
+                          <label for="first_name" class="col-lg-2 control-label">名前</label>
+                          <div class="col-lg-10">
+                            <input type="text" class="form-control" name="first_name" placeholder="名前" required value="{{operators.first_name}}">
+                            {{validation.first_name}}
+                          </div>
+                        </div>
+                        <div class="form-group">
+                          <label for="client_name" class="col-lg-2 control-label">Twilio名</label>
+                          <div class="col-lg-10">
+                            <input type="text" class="form-control" name="client_name" placeholder="Twilio名" required value="{{operators.client_name}}">
+                            {{validation.client_name}}
+                          </div>
+                        </div>
+                        <div class="form-group">
+                          <label for="first_name" class="col-lg-2 control-label">電話番号</label>
+                          <div class="col-lg-10">
+                            <input type="text" class="form-control" name="telnum" placeholder="電話番号" required value="{{operators.telnum}}">
+                            {{validation.telnum}}
+                          </div>
+                        </div>
+                        <div class="form-group">
+                          <label for="select" class="col-lg-2 control-label">キュー</label>
+                          <div class="col-lg-10">
+                            <br>
+                            <select multiple="" class="form-control" required name="operator_queues[]">
+                            {% for queue in queues %}
+                                {% if queue.queue_id in opqueues %}
+                                    <option value="{{queue.queue_id}}" selected>{{queue.queue_name}}</option>
+                                {% else %}
+                                    <option value="{{queue.queue_id}}">{{queue.queue_name}}</option>
+                                {% endif %}
+                            {% endfor %}
+                            </select>
+                          </div>
+                        </div>
+                        <div class="form-group">
+                          <label for="select" class="col-lg-2 control-label">権限</label>
+                          <div class="col-lg-10">
+                            <select class="form-control" id="select" required  name="operator_level">
+                                {% for level in oplevels %}
+                                    {% if level.operator_level_id == oplevel %}
+                                        <option value="{{level.operator_level_id}}" selected>{{level.operator_level_name}}</option>
+                                    {% else %}
+                                        <option value="{{level.operator_level_id}}">{{level.operator_level_name}}</option>
+                                    {% endif %}
+                                {% endfor %}
+                            </select>
+                            <br>
+                          </div>
+                        </div>
+                        <div class="form-group">
+                          <div class="col-lg-10 col-lg-offset-2">
+                            {% if flag == "CHANGE" %}
+                            <button type="submit" class="btn btn-primary" name="change" value="change">変更</button>
+                            <button type="submit" class="btn btn-danger" name="delete" value="delete">削除</button>
+                            <input type="hidden" name="tag" value="CHANGE">                          
+                            {% else %}
+                            <button type="submit" class="btn btn-primary" name="regist" value="regist">登録</button>
+                            {% endif %}
+                          </div>
+                        </div>
+                      </fieldset>
+                    </form>
+                </div>
+            </div>
+        </div>
+                            
+    {% endautoescape %}
+{% endblock message %}

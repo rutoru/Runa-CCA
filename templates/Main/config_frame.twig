@@ -1,0 +1,137 @@
+{# 
+/**
+ * Configuration Flame Template
+ *
+ * @author rutoru
+ * @package Runa-CCA
+ */
+#}
+{% autoescape true %}
+<!DOCTYPE html>
+<html lang="ja-JP">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Runa-CCA</title>
+
+    <!-- Bootstrap -->
+    <link href="/runa-cca/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    
+    <script type="text/javascript"
+      src="//static.twilio.com/libs/twiliojs/1.1/twilio.min.js"></script>
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <script src="/runa-cca/vendor/bootstrap/js/bootstrap.min.js"></script>
+    
+  </head>
+
+    <body>
+        <div class="navbar navbar-default">
+            <div class="container">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-responsive-collapse">
+                      <span class="icon-bar"></span>
+                      <span class="icon-bar"></span>
+                      <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="/runa-cca/login">Runa-CCA Configurator</a>
+                </div>
+                <div class="navbar-collapse collapse navbar-responsive-collapse">
+                    
+                    {% if session.operator_lv <= 2 %}
+                    <ul class="nav navbar-nav">
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">オペレータ管理<b class="caret"></b></a>
+                            <ul class="dropdown-menu">
+                                <li><a href="/runa-cca/conf/oplist">オペレータ一覧</a></li>
+                                <li><a href="/runa-cca/conf/opnew">オペレータ追加</a></li>
+                            </ul>
+                        </li>
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">キュー管理<b class="caret"></b></a>
+                            <ul class="dropdown-menu">
+                                <li><a href="/runa-cca/conf/queuelist">キュー一覧</a></li>
+                                <li><a href="/runa-cca/conf/queuenew">キュー追加</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                    {% endif %}
+                    
+                    <ul class="nav navbar-nav navbar-right">
+                      <li><a data-toggle="modal" href="#softphoneModal">ソフトフォン</a></li>
+                      <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">{{session.operator_name}}さん<b class="caret"></b></a>
+                        <ul class="dropdown-menu">
+                          <li><a data-toggle="modal" href="/runa-cca/self/passchgdisp">パスワード変更</a></li>
+                          <li class="divider"></li>
+                          <li><a href="/runa-cca/logout">Logout</a></li>
+                        </ul>
+                      </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+      
+     <div class="container">
+        <div class="row">
+            <div class="col-md-4">
+                <h1>Runa-CCA</h1>
+                <p class="lead">A Call Center Application for Twilio!</p>
+                <p>Twilio用のコールセンターアプリケーションです。</p>
+                <div class="alert alert-dismissable {{alert_level}}" id="config_message_back">
+                <H4>{{alert_title}}</H4>
+                    <p id = "config_message">{{popup_msg}}</p>
+                </div>
+            </div>
+            <div class="col-md-8">
+                <div id='contents'>
+                {# ########## Replace Block ########## #}
+                    {% block message %}{% endblock %}
+                {# ########## Replace Block ########## #}
+            </div>
+            </div>
+        </div>
+
+        <footer>
+            <div class="row">
+                <div class="col-lg-12">
+                    <hr>
+                    <p>Runa-CCA stands for "<b>Ru</b>toru's <b>N</b>etwork L<b>a</b>boratory - <b>C</b>all <b>C</b>enter <b>A</b>pplication". This is the dedicated version for Twilio.</p>
+                    <p>Developed by <a href="" rel="nofollow">rutoru</a>. Code released under the <a href="">MIT License</a>.</p>
+                </div>
+            </div>
+        </footer>
+
+        <div class="modal" id="softphoneModal">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                <h4 class="modal-title">ソフトフォン起動確認</h4>
+              </div>
+              <div class="modal-body">
+                <p>ソフトフォンを別画面に開きます。よろしいですか？</p>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onClick="window.open('/runa-cca/softphone');">OK</button>
+              </div>
+            </div>
+          </div>
+        </div>
+            
+    </div>
+                
+  </body>
+
+</html>
+{% endautoescape %}
+

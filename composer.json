@@ -1,0 +1,16 @@
+{
+    "require": {
+        
+        "slim/slim" : "2.*",
+        "slim/views" : "0.1.*",
+        "slim/extras" : "2.0.*",
+        "twig/twig" : "1.*",
+        "illuminate/database" : "4.0.*",
+        "Respect/Validation" : "0.5.*",
+        "twilio/sdk": "dev-master"
+        
+    },
+    "autoload": {
+        "psr-0": {"": "lib/"}
+    }
+}

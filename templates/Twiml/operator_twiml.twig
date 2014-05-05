@@ -1,0 +1,15 @@
+{# 
+/**
+ * Operator TwiML Template
+ *
+ * @author rutoru
+ * @package Runa-CCA
+ */
+#}{% extends "Twiml/operator_twiml_frame.twig" %}
+{% block twilio_dial %}
+{% autoescape false %}
+<Dial callerId="{{twilio_caller_id}}">
+{{twilio_dial_number}}
+</Dial>
+{% endautoescape %}
+{% endblock twilio_dial %}

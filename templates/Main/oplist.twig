@@ -1,0 +1,56 @@
+{# 
+/**
+ * Operator List Template
+ *
+ * @author rutoru
+ * @package Runa-CCA
+ */
+#}
+{% extends "Main/config_frame.twig" %}
+{% block message %}
+    {% autoescape true %}
+
+        <div class="page-header" id="banner">
+            <div class="row">
+                <div class="col-lg-12">
+                    <form action="/runa-cca/conf/opmod" method="POST">
+                    <h2>オペレータ一覧</h2>
+                    <table class="table table-striped table-hover ">
+                      <thead>
+                        <tr>
+                            <th>選択</th>
+                            <th>オペレータID</th>
+                            <th>名前</th>
+                            <th>Twilio名</th>
+                            <th>電話番号</th>
+                            <th>権限</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                            {% for operator in operators %}
+                            <tr>
+                                <td><input type="radio" name="operator_id" value="{{operator.operator_id}}" required></td>
+                                <td>{{operator.operator_id}}</td>
+                                <td>{{operator.last_name}} {{operator.first_name}}</td>
+                                <td>{{operator.client_name}}</td>
+                                <td>{{operator.telnum}}</td>
+
+                                {% for level in oplevels %}
+                                    {% if level.operator_level_id == operator.operator_level_id %}
+                                    <td>{{level.operator_level_name}}</td>
+                                    {% endif %}
+                                {% endfor %}
+                                
+                            </tr>
+                            {% endfor %}
+                      </tbody>
+                    </table>
+                    <button type="submit" class="btn btn-primary" name="display" value="display">表示</button>
+                    <button type="submit" class="btn btn-warning" name="change_pass" value="change_pass">パスワード変更</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+    {% endautoescape %}
+{% endblock message %}

@@ -1,0 +1,81 @@
+{# 
+/**
+ * Queue New Template
+ *
+ * @author rutoru
+ * @package Runa-CCA
+ */
+#}
+{% extends "Main/config_frame.twig" %}
+{% block message %}
+    {% autoescape true %}
+
+        <div class="page-header" id="banner">
+            <div class="row">
+                <div class="col-lg-12">
+                    {% if flag == "CHANGE" %}
+                    <h2>キュー変更・削除</h2>
+                    {% else %}
+                    <h2>キュー登録</h2>
+                    {% endif %}
+                    <form class="form-horizontal" action="/runa-cca/conf/queueadd" method="POST">
+                      <fieldset>
+                        <div class="form-group">
+                          <label for="operator_id" class="col-lg-2 control-label">キューID</label>
+                          <div class="col-lg-10">
+                            {% if flag == "CHANGE" %}
+                            <input type="text" class="form-control" name="queue_id" placeholder="キューID" value="{{queues.queue_id}}" readonly="readonly">
+                            {{validation.queue_id}}
+                            {% else %}
+                            <input type="text" class="form-control" name="queue_id" placeholder="キューID" value="{{queues.queue_id}}" required>
+                            {{validation.queue_id}}
+                            {% endif %}
+                          </div>
+                        </div>
+                        <div class="form-group">
+                          <label for="queue_name" class="col-lg-2 control-label">キュー名</label>
+                          <div class="col-lg-10">
+                            <input type="text" class="form-control" name="queue_name" placeholder="キュー名" required value="{{queues.queue_name}}">
+                            {{validation.queue_name}}
+                          </div>
+                        </div>
+                        <div class="form-group">
+                          <label for="action_url" class="col-lg-2 control-label">action_url</label>
+                          <div class="col-lg-10">
+                            <input type="text" class="form-control" name="action_url" placeholder="action_url" required value="{{queues.action_url}}">
+                            {{validation.action_url}}
+                          </div>
+                        </div>
+                        <div class="form-group">
+                          <label for="wait_url" class="col-lg-2 control-label">wait_url</label>
+                          <div class="col-lg-10">
+                            <input type="text" class="form-control" name="wait_url" placeholder="wait_url" required value="{{queues.wait_url}}">
+                            {{validation.wait_url}}
+                          </div>
+                        </div>
+                        <div class="form-group">
+                          <label for="guidance_url" class="col-lg-2 control-label">guidance_url</label>
+                          <div class="col-lg-10">
+                            <input type="text" class="form-control" name="guidance_url" placeholder="guidance_url" required value="{{queues.guidance_url}}">
+                            {{validation.guidance_url}}
+                          </div>
+                        </div>
+                          <div class="form-group">
+                          <div class="col-lg-10 col-lg-offset-2">
+                            {% if flag == "CHANGE" %}
+                            <button type="submit" class="btn btn-primary" name="change" value="change">変更</button>
+                            <button type="submit" class="btn btn-danger" name="delete" value="delete">削除</button>
+                            <input type="hidden" name="tag" value="CHANGE">
+                            {% else %}
+                            <button type="submit" class="btn btn-primary" name="regist" value="regist">登録</button>
+                            {% endif %}
+                          </div>
+                        </div>
+                      </fieldset>
+                    </form>
+                </div>
+            </div>
+        </div>
+                            
+    {% endautoescape %}
+{% endblock message %}

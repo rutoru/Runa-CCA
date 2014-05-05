@@ -1,0 +1,185 @@
+{# 
+/**
+ * Softphone Flame Template
+ *
+ * @author rutoru
+ * @package Runa-CCA
+ */
+#}
+{% autoescape true %}
+<!DOCTYPE html>
+<html lang="ja-JP">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Runa-CCA</title>
+
+    <!-- Bootstrap -->
+    <link href="/runa-cca/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    
+    <script type="text/javascript"
+      src="//static.twilio.com/libs/twiliojs/1.1/twilio.min.js"></script>
+    <script type="text/javascript"
+      src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js">
+    </script>
+    <script type="text/javascript">
+ 
+    {# ########## Replace Block ########## #}
+        {% block twilio_setup %}{% endblock %}
+    {# ########## Replace Block ########## #}
+
+      Twilio.Device.ready(function (device) {
+        $("#log").text("Twilioに接続しました。");
+        $("#twilio_message").removeClass("alert-warning alert-danger alert-success alert-info").addClass("alert-success");
+      });
+ 
+      Twilio.Device.error(function (error) {
+        $("#log").text("エラー: " + error.message);
+        $("#twilio_message").removeClass("alert-warning alert-danger alert-success alert-info").addClass("alert-danger");
+      });
+ 
+      Twilio.Device.connect(function (conn) {
+        $("#log").text("電話がつながりました。");
+        $("#twilio_message").removeClass("alert-warning alert-danger alert-success alert-info").addClass("alert-success");
+      });
+ 
+      Twilio.Device.disconnect(function (conn) {
+        $("#log").text("電話が切断されました。");
+        $("#twilio_message").removeClass("alert-warning alert-danger alert-success alert-info").addClass("alert-warning");
+      });
+ 
+      Twilio.Device.incoming(function (conn) {
+        $("#log").text(conn.parameters.From + "からの電話です。");
+         $("#twilio_message").removeClass("alert-warning alert-danger alert-success alert-info").addClass("alert-info");
+        // accept the incoming connection and start two-way audio
+        conn.accept();
+      });
+ 
+      function call() {
+        // get the phone number to connect the call to
+        params = {"PhoneNumber": $("#number").val()};
+        conn = Twilio.Device.connect(params);
+
+      }
+      
+      function loginQueue(queue) {
+        params = {"PhoneNumber": queue};
+        Twilio.Device.connect(params);
+      }
+      
+      function hangup() {
+        Twilio.Device.disconnectAll();
+      }
+   
+    </script>
+    
+  </head>
+
+    <body>
+        <div class="navbar navbar-default">
+            <div class="container">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-responsive-collapse">
+                      <span class="icon-bar"></span>
+                      <span class="icon-bar"></span>
+                      <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="/runa-cca/">Runa-CCA Softphone</a>
+                </div>
+                <div class="navbar-collapse collapse navbar-responsive-collapse">
+                    <ul class="nav navbar-nav">
+                        <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">Queue <b class="caret"></b></a>
+                        <ul class="dropdown-menu">
+                          <li class="dropdown-header">Select Queue</li>
+                            {# ########## Replace Block ########## #}
+                                {% block twilio_queues %}{% endblock %}
+                            {# ########## Replace Block ########## #}
+                        </ul>
+                        </li>
+                        <li><a href="#" onclick="call();">Call</a></li>
+                        <li><a href="#" onclick="hangup();">HangUp</a></li>
+                        <!--
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Mute <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+                                    <li><a href="#" id="mute">Mute</a></li>
+                                    <li><a href="#" id="unmute">UnMute</a></li>
+                                </ul>
+                            </li>
+-->
+                    </ul>
+                        
+                    <form class="navbar-form navbar-left">
+                        <input type="text" class="form-control col-lg-8" placeholder="Telephone Number" name="number" id="number">
+                    </form>
+
+                        {# ########## Replace Block ########## #}
+                            {% block dropdown_message %}{% endblock %}
+                        {# ########## Replace Block ########## #}
+                            
+                </div>
+            </div>
+        </div>
+      
+    <div class="container">
+
+        <div class="row">
+            <div class="col-md-4">
+                <h1>Runa-CCA</h1>
+                <p class="lead">A Call Center Application for Twilio!</p>
+                <p>Twilio用のコールセンターアプリケーションです。</p>
+                {# ########## Replace Block ########## #}
+                    {% block message %}{% endblock %}
+                {# ########## Replace Block ########## #}
+        </div>
+            <div class="col-md-8">
+            </div>
+        </div>
+
+        <footer>
+            <div class="row">
+                <div class="col-lg-12">
+                    <hr>
+                    <p>Runa-CCA stands for "<b>Ru</b>toru's <b>N</b>etwork L<b>a</b>boratory - <b>C</b>all <b>C</b>enter <b>A</b>pplication". This is the dedicated version for Twilio.</p>
+                    <p>Developed by <a href="" rel="nofollow">rutoru</a>. Code released under the <a href="">MIT License</a>.</p>
+                </div>
+            </div>
+        </footer>
+
+        <div class="modal" id="settingModal">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                <h4 class="modal-title">管理画面確認</h4>
+              </div>
+              <div class="modal-body">
+                <p>管理画面を別画面に開きます。よろしいですか？</p>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onClick="window.open('/runa-cca/conf');">OK</button>
+              </div>
+            </div>
+          </div>
+        </div>
+    </div>
+                
+                
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <script src="/runa-cca/vendor/bootstrap/js/bootstrap.min.js"></script>
+  </body>
+
+</html>
+{% endautoescape %}
+

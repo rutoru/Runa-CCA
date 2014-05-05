@@ -1,0 +1,46 @@
+{# 
+/**
+ * Softphone Template
+ *
+ * @author rutoru
+ * @package Runa-CCA
+ */
+#}
+{% extends "Main/softphone_frame.twig" %}
+
+{% block twilio_setup %}
+    {% autoescape true %} 
+      Twilio.Device.setup("{{session.twilio_token}}");
+    {% endautoescape %}
+{% endblock twilio_setup %}
+
+{% block message %}
+    {% autoescape true %}
+        <div class="alert alert-dismissable alert-info" id="twilio_message">
+        <H4>Twilioメッセージ</H4>
+        <p id="log">Twilioに接続中です。</p>
+        </div>
+    {% endautoescape %}
+{% endblock message %}
+
+{% block twilio_queues %}
+    {% autoescape true %}
+        {% for queue in session.operator_queue %}
+            <li><a href="#" onclick="loginQueue('{{queue.queue_id}}');" id="queue_number" name="queue_number">{{queue.queue_id}}</a></li>
+        {% endfor %}
+    {% endautoescape %}
+{% endblock twilio_queues %}
+
+{% block dropdown_message %}
+    {% autoescape true %}
+        <ul class="nav navbar-nav navbar-right">
+          <li class="dropdown">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown">{{session.operator_name}}さん<b class="caret"></b></a>
+            <ul class="dropdown-menu">
+            <li class="divider"></li>
+            <li><a href="/runa-cca/logout">Logout</a></li>
+            </ul>
+          </li>
+        </ul>
+    {% endautoescape %}  
+{% endblock dropdown_message %}

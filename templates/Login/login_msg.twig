@@ -1,0 +1,21 @@
+{# 
+/**
+ * Login Message Template
+ *
+ * @author rutoru
+ * @package Runa-CCA
+ */
+#}
+{% extends "Login/login_frame.twig" %}
+{% block login_message %}
+    {% autoescape true %}
+        {# Except for the login display #}
+        {% if alert_title is not null %}
+        <div class="alert alert-dismissable {{alert_level}}">
+        <button type="button" class="close" data-dismiss="alert">×</button>
+        <H4>{{alert_title}}</H4>
+        <p>{{login_error_message}}</p>
+        </div>
+        {% endif %}
+    {% endautoescape %}
+{% endblock login_message %}

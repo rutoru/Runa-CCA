@@ -1,0 +1,26 @@
+{# 
+/**
+ * Error Frame Template
+ *
+ * @author rutoru
+ * @package Runa-CCA
+ */
+#}
+{% autoescape true %}
+<!DOCTYPE html>
+<html lang="ja-JP">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Runa-CCA</title>
+  </head>
+
+  <body>
+      <h1>{{error_title}}</h1>
+      {{error_message}}
+  </body>
+
+</html>
+{% endautoescape %}
+
