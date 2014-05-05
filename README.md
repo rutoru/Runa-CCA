@@ -44,13 +44,6 @@ MySQLのテーブルに格納されます。レポートの参照は、MySQLの�
 + オペレータ側キュー（Queue）から出た時 … オペレータが応答した際の情報です。データは`queue_data`テーブルに格納します。
 + 通話終了時 ... 「StatusCallback」です。StatusCallbackは通話終了後に非同期で発生するリクエストで、通話に関する情報を収集しデータベースに書き込みを行うことができます。デフォルトはオフ。Twilioの設定画面から「電話番号」をクリックした後、 「Optional Voice Settings」をクリック。表示される「Status Callback URL」に作成したプログラムを設定する必要があります。データは`statuscallback_data`テーブルに格納されます。
 
-### シーケンス ###
-入電からキューに入るまでのシーケンスです。
-
-[![Sequence][image]](https://www.flickr.com/photos/40853659@N06/13815287663)
- 
-[image]: https://farm3.staticflickr.com/2914/13815287663_1176bee04a.jpg "Sequence"
-
 インストール
 ------
 今後記載。
