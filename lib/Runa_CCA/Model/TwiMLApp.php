@@ -37,10 +37,10 @@ class TwiMLApp {
         $number  = \Base\Conf::h($params['PhoneNumber']);
         
         // DB Connection
-        \Runa_CCA\Model\DB::registerIlluminate();
+        $dbConn = \Runa_CCA\Model\DB::getIlluminateConnection();
 
         // Check if the queue exists.
-        $queueObj = \Runa_CCA\Model\Queue::where('queue_id', '=', $number)->first();
+        $queueObj = \Runa_CCA\Model\Database\Queue::where('queue_id', '=', $number)->first();
         
         // PhoneNumber is a queue.
         if (isset($queueObj->queue_name)){

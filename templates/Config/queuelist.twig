@@ -6,7 +6,7 @@
  * @package Runa-CCA
  */
 #}
-{% extends "Main/config_frame.twig" %}
+{% extends "Config/config_frame.twig" %}
 {% block message %}
     {% autoescape true %}
 
@@ -21,6 +21,7 @@
                             <th>選択</th>
                             <th>キューID</th>
                             <th>キュー名</th>
+                            <th>キュー最大数</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -29,6 +30,7 @@
                                 <td><input type="radio" name="queue_id" value="{{queue.queue_id}}" required></td>
                                 <td>{{queue.queue_id}}</td>
                                 <td>{{queue.queue_name}}</td>
+                                <td>{{queue.max_size}}</td>
                             </tr>
                             {% endfor %}
                       </tbody>

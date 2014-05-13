@@ -1,7 +1,6 @@
 <?php
 /**
  * Render Class
- * TwigにRenderするクラス
  *
  * @author rutoru
  * @package Runa-CCA
@@ -45,10 +44,16 @@ class Render {
                 $this->app->render('Login/login_msg.twig');
                 break;
             
-            // MAIN
-            case "MAIN":
+            // SOFTPHONE
+            case "SOFTPHONE":
                 
-                $this->app->render('Main/softphone.twig');
+                $this->app->render(
+                    'Softphone/softphone.twig',
+                    [
+                     'twilio_token'           =>    $args[1],  // Twilio Token
+                    ]
+                );
+
                 break;
             
             // LOGINERR
@@ -65,6 +70,20 @@ class Render {
                 
                 break;
 
+            // NOAUTH
+            case "NOAUTH":
+                
+                $this->app->render(
+                    'Login/login_msg.twig', 
+                    [
+                        'alert_level'         => 'alert-danger',
+                        'alert_title'         => \Runa_CCA\View\Msg::TITLE_NOAUTH,
+                        'login_error_message' => \Runa_CCA\View\Msg::MSG_NOAUTH,
+                    ]
+                );  
+                
+                break;
+            
             // CONFIG Portal
             case "CONFIGPORTAL":
                 
@@ -74,11 +93,11 @@ class Render {
                 if(!isset($args[3])) $args[3] = \Runa_CCA\View\Msg::MSG_CONFLOGIN;
                 
                 $this->app->render(
-                    'Main/config_frame.twig', 
+                    'Config/config_frame.twig', 
                     [
                         'alert_level'         => $args[1],  // Alert Level
                         'alert_title'         => $args[2],  // Alert Title
-                        'popup_msg'           => $args[3],  // Alert Message
+                        'alert_msg'           => $args[3],  // Alert Message
                     ]
                 );  
                 
@@ -88,14 +107,14 @@ class Render {
             case "OPERATORLIST":
                 
                 $this->app->render(
-                    'Main/oplist.twig', 
+                    'Config/oplist.twig', 
                     [
                         'operators'           => $args[1],  // Operator List
                         'oplevels'            => $args[2],  // Operator Levels
                         'alert_level'         => $args[3],  // Alert Level
                         'alert_title'         => $args[4],  // Alert Title
-                        'popup_msg'           => $args[5],  // Alert Message
-                        ]
+                        'alert_msg'           => $args[5],  // Alert Message
+                    ]
                 );  
                 
                 break;
@@ -104,7 +123,7 @@ class Render {
             case "OPERATORNEW":
                 
                 $this->app->render(
-                    'Main/opnew.twig', 
+                    'Config/opnew.twig', 
                     [
                         'queues'              => $args[1],  // Queue List
                         'operators'           => $args[2],  // Operator List
@@ -115,7 +134,7 @@ class Render {
                         'flag'                => $args[7],  // Flag (Update or not)
                         'alert_level'         => $args[8],  // Alert Level
                         'alert_title'         => $args[9],  // Alert Title
-                        'popup_msg'           => $args[10]  // Alert Message
+                        'alert_msg'           => $args[10], // Alert Message
                     ]
                 );  
                 
@@ -125,12 +144,12 @@ class Render {
             case "QUEUELIST":
                 
                 $this->app->render(
-                    'Main/queuelist.twig', 
+                    'Config/queuelist.twig', 
                     [
-                        'queues'              => $args[1],
-                        'alert_level'         => $args[2],
-                        'alert_title'         => $args[3],
-                        'popup_msg'           => $args[4],
+                        'queues'              => $args[1],  // Queue List
+                        'alert_level'         => $args[2],  // Alert Level
+                        'alert_title'         => $args[3],  // Alert Title
+                        'alert_msg'           => $args[4],  // Alert Message
                     ]
                 );  
                 
@@ -140,14 +159,14 @@ class Render {
             case "QUEUENEW":
                 
                 $this->app->render(
-                    'Main/queuenew.twig', 
+                    'Config/queuenew.twig', 
                     [
-                        'queues'              => $args[1],
-                        'validation'          => $args[2],
-                        'flag'                => $args[3],
-                        'alert_level'         => $args[4],
-                        'alert_title'         => $args[5],
-                        'popup_msg'           => $args[6],
+                        'queues'              => $args[1],  // Queue List
+                        'validation'          => $args[2],  // Result of Validation
+                        'flag'                => $args[3],  // Flag (Update or not)
+                        'alert_level'         => $args[4],  // Alert Level
+                        'alert_title'         => $args[5],  // Alert Title
+                        'alert_msg'           => $args[6],  // Alert Message
                     ]
                 );  
                 
@@ -171,14 +190,14 @@ class Render {
                 case "PASSWORDCHANGE":
 
                     $this->app->render(
-                        'Main/pass_change.twig', 
+                        'Config/pass_change.twig', 
                         [
                             'operator_id'         => $args[1],  // Operator ID
                             'validation'          => $args[2],  // Result of Validation
                             'flag'                => $args[3],  // Flag (Update or not)
                             'alert_level'         => $args[4],  // Alert Level
                             'alert_title'         => $args[5],  // Alert Title
-                            'popup_msg'           => $args[6],  // Alert Message
+                            'alert_msg'           => $args[6],  // Alert Message
                         ]
                     ); 
 
@@ -222,7 +241,6 @@ class Render {
                 );
 
                 break;
-
             
         }
     }

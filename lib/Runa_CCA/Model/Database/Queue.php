@@ -5,7 +5,7 @@
  * @author rutoru
  * @package Runa-CCA
  */
-namespace Runa_CCA\Model;
+namespace Runa_CCA\Model\Database;
 
 class Queue extends \Illuminate\Database\Eloquent\Model{
     
@@ -14,6 +14,7 @@ CREATE TABLE queue
 (
 `queue_id` varchar(20) PRIMARY KEY NOT NULL UNIQUE,
 `queue_name` varchar(32) NOT NULL,
+`max_size` int,
 `action_url` varchar(128),
 `wait_url` varchar(128),
 `guidance_url` varchar(128),
@@ -34,6 +35,7 @@ ENGINE InnoDB;
                                 'wait_url',
                                 'guidance_url',
                                 'twilio_queue_id',
+                                'max_size',
                             ];
 
     /**
@@ -44,7 +46,7 @@ ENGINE InnoDB;
 
     public function operator()
     {
-        return $this->belongsToMany('\Runa_CCA\Model\Operator');
+        return $this->belongsToMany('\Runa_CCA\Model\Database\Operator');
     }
 
     

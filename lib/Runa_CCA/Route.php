@@ -23,16 +23,16 @@ class Route{
 
         // Configuration
         $app->map ('/conf',            function(){\Runa_CCA\Controller\Configuration::portal();})->via('GET', 'POST');
-        $app->map ('/conf/oplist',     function(){\Runa_CCA\Controller\OpConfiguration::portal("OPERATORLIST");})->via('GET', 'POST');
-        $app->map ('/conf/opnew',      function(){\Runa_CCA\Controller\OpConfiguration::portal("OPERATORNEW");})->via('GET', 'POST');
-        $app->post('/conf/opadd',      function(){\Runa_CCA\Controller\OpConfiguration::portal("OPERATORADD");});
-        $app->post('/conf/opmod',      function(){\Runa_CCA\Controller\OpConfiguration::portal("OPERATORMOD");});
+        $app->map ('/conf/oplist',     function(){\Runa_CCA\Controller\OpConfiguration::portal("LISTOPERATOR");})->via('GET', 'POST');
+        $app->map ('/conf/opnew',      function(){\Runa_CCA\Controller\OpConfiguration::portal("NEWOPERATOR");})->via('GET', 'POST');
+        $app->post('/conf/opadd',      function(){\Runa_CCA\Controller\OpConfiguration::portal("MNGOPERATOR");});
+        $app->post('/conf/opmod',      function(){\Runa_CCA\Controller\OpConfiguration::portal("MODOPERATOR");});
         $app->post('/conf/passchg',    function(){\Runa_CCA\Controller\Login::password("CHANGEPASSWORD");});
         $app->get ('/self/passchgdisp',function(){\Runa_CCA\Controller\Login::changePasswordSelf();});
-        $app->map ('/conf/queuelist',  function(){\Runa_CCA\Controller\QueueConfiguration::portal("QUEUELIST");})->via('GET', 'POST');
-        $app->map ('/conf/queuenew',   function(){\Runa_CCA\Controller\QueueConfiguration::portal("QUEUENEW");})->via('GET', 'POST');
-        $app->post('/conf/queueadd',   function(){\Runa_CCA\Controller\QueueConfiguration::portal("QUEUEADD");});
-        $app->post('/conf/queuemod',   function(){\Runa_CCA\Controller\QueueConfiguration::portal("QUEUEMOD");});
+        $app->map ('/conf/queuelist',  function(){\Runa_CCA\Controller\QueueConfiguration::portal("LISTQUEUE");})->via('GET', 'POST');
+        $app->map ('/conf/queuenew',   function(){\Runa_CCA\Controller\QueueConfiguration::portal("NEWQUEUE");})->via('GET', 'POST');
+        $app->post('/conf/queueadd',   function(){\Runa_CCA\Controller\QueueConfiguration::portal("MNGQUEUE");});
+        $app->post('/conf/queuemod',   function(){\Runa_CCA\Controller\QueueConfiguration::portal("MODQUEUE");});
 
         // Softphone
         $app->map ('/softphone',       function(){\Runa_CCA\Controller\Softphone::portal();})->via('GET', 'POST');

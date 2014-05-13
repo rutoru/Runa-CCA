@@ -43,8 +43,10 @@ class Main {
                 case '1':
                     
                     // DB Connection
-                    \Runa_CCA\Model\DB::registerIlluminate();
-                    $existingQueue = \Runa_CCA\Model\Queue::find(Conf::QUEUE);
+                    $dbConn = (new \Runa_CCA\Model\DB())->getIlluminateConnection();
+                    
+                    // Search the queue.
+                    $existingQueue = \Runa_CCA\Model\Database\Queue::find(Conf::QUEUE);
                     
                     $this->response->say('オペレータにおつなぎします。しばらくお待ちください。',
                                             ['language' => \Base\Conf::LANG]);
@@ -71,8 +73,10 @@ class Main {
                 default:
                     
                     // DB Connection
-                    \Runa_CCA\Model\DB::registerIlluminate();
-                    $existingQueue = \Runa_CCA\Model\Queue::find(Conf::QUEUE);
+                    $dbConn = (new \Runa_CCA\Model\DB())->getIlluminateConnection();
+                    
+                    // Search the queue.
+                    $existingQueue = \Runa_CCA\Model\Database\Queue::find(Conf::QUEUE);
 
                     $gather = $this->response->gather(
                                                     [
@@ -109,8 +113,10 @@ class Main {
         }else{   
 
             // DB Connection
-            \Runa_CCA\Model\DB::registerIlluminate();
-            $existingQueue = \Runa_CCA\Model\Queue::find(Conf::QUEUE);
+            $dbConn = (new \Runa_CCA\Model\DB())->getIlluminateConnection();
+            
+            // Search the queue.
+            $existingQueue = \Runa_CCA\Model\Database\Queue::find(Conf::QUEUE);
             
             // Get the client to input a digit.
             $gather = $this->response->gather(
@@ -128,7 +134,8 @@ class Main {
              // Connect to an operator if the client meets timeout.
             $this->response->say('入力が確認できませんでした。'
                                 .'オペレータにおつなぎします。しばらくお待ちください。',
-                                    ['language' => \Base\Conf::LANG]);           
+                                    ['language' => \Base\Conf::LANG]);    
+            
             // Enter Queue.
             // Call WaitURL if the client has to wait.
             $this->response->enqueue(Conf::QUEUE, 

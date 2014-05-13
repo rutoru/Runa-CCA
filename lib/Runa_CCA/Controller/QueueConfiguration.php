@@ -32,66 +32,67 @@ class QueueConfiguration {
  
             // Render
             $render = new \Runa_CCA\View\Render($app);
-            $render->display("LOGINERR");
+            $render->display("NOAUTH");
 
         // Go to main page if the user has already been verified.
         }else{
 
-            // Chek the operator level.
-            // The operator with level SYSTEMADMIN or SUPERVISOR can log in.
-            if(isset($_SESSION['operator_lv'])){
-                
-                if ($_SESSION['operator_lv'] > (new \Runa_CCA\Model\OperatorLevel())->getConfigBoarder()){
-                    
-                    // Display an error and route to login page.
-                    $render = new \Runa_CCA\View\Render($app);
-                    $render->display("LOGINERR");
-                    
-                }else{
-            
-                    switch ($menu){
+            // Check the operator level.
+            // The operator with level SYSTEMADMIN can log in.
+            if(isset($_SESSION['operator_lv']) && 
+                     $_SESSION['operator_lv'] <= (new \Runa_CCA\Model\Database\OperatorLevel())->getQueueConfigBorder()){
 
-                        // List queues.
-                        case "QUEUELIST":
+                switch ($menu){
 
-                            Self::listQueue($app);
-                            break;
+                    // List queues.
+                    case "LISTQUEUE":
 
-                        // New queue.
-                        case "QUEUENEW":
+                        Self::listQueue($app);
+                        break;
 
-                            Self::newQueue($app);
-                            break;
+                    // New queue.
+                    case "NEWQUEUE":
 
-                        // Add queue.
-                        case "QUEUEADD":
+                        Self::newQueue($app);
+                        break;
 
-                            Self::addQueue($app, $params);
-                            break;
+                    // Add/Change/Delete queue.
+                    case "MNGQUEUE":
 
-                        // Modify queue.
-                        case "QUEUEMOD":
+                        Self::mngQueue($app, $params);
+                        break;
 
-                            Self::modQueue($app, $params);
-                            break;
+                    // Modify queue.
+                    case "MODQUEUE":
 
-                        // Go to Error
-                        default :
+                        Self::modQueue($app, $params);
+                        break;
 
-                            \Runa_CCA\Controller\Error::display("ERROR");
-                            break;    
+                    // Go to Error
+                    default :
 
-                    }
+                        \Runa_CCA\Controller\Error::display("ERROR");
+                        break;    
+
                 }
-            
-            // No Session value operator_lv
+                    
             }else{
+
+                // Destroy Session
+                $_SESSION = array();
+
+                if (isset($_COOKIE[session_name()])){
+                    setcookie(session_name(), '', time() - 3600, '/');
+                }
+
+                session_destroy();
 
                 // Display an error and route to login page.
                 $render = new \Runa_CCA\View\Render($app);
-                $render->display("LOGINERR");
- 
+                $render->display("NOAUTH");
+
             }
+            
         }
     }
 
@@ -103,10 +104,10 @@ class QueueConfiguration {
     static function listQueue($app){
 
         // DB Connection
-        \Runa_CCA\Model\DB::registerIlluminate();
+        $dbConn = (new \Runa_CCA\Model\DB())->getIlluminateConnection();
 
         // Get all queue data.
-        $queues = \Runa_CCA\Model\Queue::all();
+        $queues = \Runa_CCA\Model\Database\Queue::all();
 
         $alertLv    = \Runa_CCA\View\Msg::ALERT_INFO;
         $alertTitle = \Runa_CCA\View\Msg::TITLE_INFO;
@@ -119,11 +120,11 @@ class QueueConfiguration {
         // Go to Queue List page.
         $render = new \Runa_CCA\View\Render($app);
         $render->display(
-                    "QUEUELIST",
-                    $queues,
-                    $alertLv,
-                    $alertTitle,
-                    $alertMsg
+                    "QUEUELIST",  // Switch Flag
+                    $queues,      // Queue List
+                    $alertLv,     // Alert Level
+                    $alertTitle,  // Alert Title
+                    $alertMsg     // Alert Message
                 );
     }
 
@@ -133,9 +134,6 @@ class QueueConfiguration {
      * @param \Slim\Slim $app Slim Object
      */   
     static function newQueue($app){
-
-        // DB Connection
-        \Runa_CCA\Model\DB::registerIlluminate();
 
         // Set Message
         $alertLv    = \Runa_CCA\View\Msg::ALERT_INFO;
@@ -149,26 +147,26 @@ class QueueConfiguration {
         // Go to Queue Add page.
         $render = new \Runa_CCA\View\Render($app);
         $render->display(
-                    "QUEUENEW",
-                    NULL,
-                    NULL,
-                    NULL,
-                    $alertLv,
-                    $alertTitle,
-                    $alertMsg
+                    "QUEUENEW",  // Switch Flag
+                    NULL,        // Queue List
+                    NULL,        // Result of Validation
+                    NULL,        // Flag (Update or not)
+                    $alertLv,    // Alert Level
+                    $alertTitle, // Alert Title
+                    $alertMsg    // Alert Message
                 );
     }
 
     /**
-     * addQueue
+     * mngQueue
      * 
      * @param \Slim\Slim $app Slim Object
      * @param Array $params Input parameters
      */   
-    static function addQueue($app, $params){
+    static function mngQueue($app, $params){
 
         // DB Connection
-        \Runa_CCA\Model\DB::registerIlluminate();
+        $dbConn = (new \Runa_CCA\Model\DB())->getIlluminateConnection();
 
         // Validate
         $queueValidate = \Runa_CCA\Model\Validator::validateQueue($params);
@@ -195,72 +193,268 @@ class QueueConfiguration {
             // Go to Operator Add page with the result of the validation.
             $render = new \Runa_CCA\View\Render($app);
             $render->display(
-                        "QUEUENEW",
-                        $params,
-                        $queueValidate,
-                        $flag,
-                        $alertLv,
-                        $alertTitle,
-                        $alertMsg
+                        "QUEUENEW",     // Switch Flag
+                        $params,        // Queue List
+                        $queueValidate, // Result of Validation
+                        $flag,          // Flag (Update or not)
+                        $alertLv,       // Alert Level
+                        $alertTitle,    // Alert Title
+                        $alertMsg       // Alert Message
                     );
             return;
         }
 
         // Check if the queue exists.
-        $existingQueue = \Runa_CCA\Model\Queue::find($params["queue_id"]);
+        $existingQueue = \Runa_CCA\Model\Database\Queue::find($params["queue_id"]);
 
         // Insert the queue if the queue doesn't exists.
         if (empty($existingQueue)){
 
-            $queue = new \Runa_CCA\Model\Queue();
-            $queue->queue_id     = $params["queue_id"];
-            $queue->queue_name   = $params["queue_name"];
-            $queue->action_url   = $params["action_url"];
-            $queue->wait_url     = $params["wait_url"];
-            $queue->guidance_url = $params["guidance_url"];
-            $queue->save();
+            try{
+                
+                try{
+                    // Begin Transaction.
+                    $dbConn->getPdo()->beginTransaction();
 
-            // Set Message
-            $alertLv    = \Runa_CCA\View\Msg::ALERT_SUCCESS;
-            $alertTitle = \Runa_CCA\View\Msg::TITLE_SUCCESS;
-            $alertMsg   = "キュー追加が成功しました。";
+                    // Create Twilio information.
+                    $twilioClient = (new \Runa_CCA\Model\Twilio())->getTwilioClient();
+                    $twilioQueue = $twilioClient->account->queues->create($params["queue_id"],
+                                                                   ['MaxSize' => $params["max_size"]]);
+
+                    // Insert the queue data.
+                    $queue = new \Runa_CCA\Model\Database\Queue();
+                    $queue->queue_id        = $params["queue_id"];
+                    $queue->queue_name      = $params["queue_name"];
+                    $queue->max_size        = $params["max_size"];
+                    $queue->action_url      = $params["action_url"];
+                    $queue->wait_url        = $params["wait_url"];
+                    $queue->guidance_url    = $params["guidance_url"];
+                    $queue->twilio_queue_id = $twilioQueue->sid;
+                    $queue->save();
+
+                    // Commit.
+                    $dbConn->getPdo()->commit();
+
+                    // Set Message
+                    $alertLv    = \Runa_CCA\View\Msg::ALERT_SUCCESS;
+                    $alertTitle = \Runa_CCA\View\Msg::TITLE_SUCCESS;
+                    $alertMsg   = "キュー追加が成功しました。";
+    
+                }catch(\Services_Twilio_RestException $tre){
+
+                    // Rollback.
+                    $dbConn->getPdo()->rollback();
+
+                    // Debug
+                    $app->log->debug(strftime("[%Y/%m/%d %H:%M:%S]:".__FILE__.":".__LINE__));
+                    $app->log->debug("Services_Twilio_RestException:".$tre->getStatus().":".$tre->getInfo());
+
+                    // Twilio Error
+                    // Set Message
+                    $alertLv    = \Runa_CCA\View\Msg::ALERT_DANGER;
+                    $alertTitle = \Runa_CCA\View\Msg::TITLE_DANGER;
+                    $alertMsg   = "Twilioエラーのため、Queue登録できませんでした。システム管理者に連絡してください";
+
+                }catch(\Exception $pe){
+
+                    // Rollback.
+                    $dbConn->getPdo()->rollback();
+
+                    // Delete Twilio information.
+                    // The exception will be caught at outer try-catch.
+                    $twilioClient = (new \Runa_CCA\Model\Twilio())->getTwilioClient();
+                    $twilioClient->account->queues->delete($twilioQueue->sid);
+
+                    // Get Child Exception because PDO Exception is nested.
+                    $e = $pe->getPrevious();
+
+                    // Set error message.
+                    if($e == NULL){
+                        $errorMsg = $pe->getCode().":".$pe->getMessage();
+                    }else{
+                        $errorMsg = $e->getCode().":".$e->getMessage();
+                    }
+
+                    // Debug
+                    $app->log->debug(strftime("[%Y/%m/%d %H:%M:%S]:".__FILE__.":".__LINE__));
+                    $app->log->debug("Exception:".$errorMsg);
+
+                    // DB Error
+                    // Set Message
+                    $alertLv    = \Runa_CCA\View\Msg::ALERT_DANGER;
+                    $alertTitle = \Runa_CCA\View\Msg::TITLE_DANGER;
+                    $alertMsg   = "DBエラーのため、Queue登録できませんでした。システム管理者に連絡してください";
+
+                }
+            
+            }catch(\Exception $oe){
+
+                // Debug
+                $app->log->debug(strftime("[%Y/%m/%d %H:%M:%S]:".__FILE__.":".__LINE__));
+                $app->log->debug("Exception:".$oe->getCode().":".$oe->getMessage());
+                
+                // Error
+                // Set Message
+                $alertLv    = \Runa_CCA\View\Msg::ALERT_DANGER;
+                $alertTitle = \Runa_CCA\View\Msg::TITLE_DANGER;
+                $alertMsg   = "エラーのため、Queue登録できませんでした。Twilioとのデータ不整合の可能性もあります。システム管理者に連絡してください";
+            }
 
         // If the queue exists.
         }else{
 
             // Delete the queue if the user wants that.
             if (isset($params["delete"])){
+                
+                try{
 
-                // Delete the queue data.
-                $affectedRowsQue
-                        = \Runa_CCA\Model\Queue::where(
-                                'queue_id', '=', $params["queue_id"])
-                                ->delete();  
+                    // Begin Transaction.
+                    $dbConn->getPdo()->beginTransaction();
+                    
+                    // Delete the queue data.
+                    $affectedRowsQue
+                            = \Runa_CCA\Model\Database\Queue::where(
+                                    'queue_id', '=', $params["queue_id"])
+                                    ->delete();
 
-                // Set Message
-                $alertLv    = \Runa_CCA\View\Msg::ALERT_SUCCESS;
-                $alertTitle = \Runa_CCA\View\Msg::TITLE_SUCCESS;
-                $alertMsg   = "キュー削除が成功しました。";
+                    // Delete Twilio information.
+                    $twilioClient = (new \Runa_CCA\Model\Twilio())->getTwilioClient();
+                    $twilioClient->account->queues->delete($existingQueue->twilio_queue_id);
+                    
+                    // Commit.
+                    $dbConn->getPdo()->commit();
+                    
+                    // Set Message
+                    $alertLv    = \Runa_CCA\View\Msg::ALERT_SUCCESS;
+                    $alertTitle = \Runa_CCA\View\Msg::TITLE_SUCCESS;
+                    $alertMsg   = "キュー削除が成功しました。";
 
+                }catch(\Services_Twilio_RestException $tre){
+
+                    // Rollback.
+                    $dbConn->getPdo()->rollback();
+                    
+                    // Debug
+                    $app->log->debug(strftime("[%Y/%m/%d %H:%M:%S]:".__FILE__.":".__LINE__));
+                    $app->log->debug("Services_Twilio_RestException:".$tre->getStatus().":".$tre->getInfo());
+
+                    // Twilio Error
+                    // Set Message
+                    $alertLv    = \Runa_CCA\View\Msg::ALERT_DANGER;
+                    $alertTitle = \Runa_CCA\View\Msg::TITLE_DANGER;
+                    $alertMsg   = "Twilioエラーのため、Queue削除できませんでした。システム管理者に連絡してください";
+                    
+                }catch(\Exception $pe){
+                    
+                    // Rollback.
+                    $dbConn->getPdo()->rollback();
+                    
+                    // Get Child Exception because PDO Exception is nested.
+                    $e = $pe->getPrevious();
+                    
+                    // Set error message.
+                    if($e == NULL){
+                        $errorMsg  = $pe->getCode().":".$pe->getMessage();
+                        $errorCode = $pe->getCode();
+                    }else{
+                        $errorMsg = $e->getCode().":".$e->getMessage();
+                        $errorCode = $e->getCode();
+                    }
+
+                    // Debug
+                    $app->log->debug(strftime("[%Y/%m/%d %H:%M:%S]:".__FILE__.":".__LINE__));
+                    $app->log->debug("Exception:".$errorMsg);
+
+                    // DB Error
+                    // Set Message
+                    $alertLv    = \Runa_CCA\View\Msg::ALERT_DANGER;
+                    $alertTitle = \Runa_CCA\View\Msg::TITLE_DANGER;
+
+                    // Integrity constraint violation
+                    if ($errorCode == 23000) {
+                        $alertMsg = "Queueに所属しているオペレータが存在するため削除できませんでした。まずオペレータをQueueから外してください。";
+                    }else{
+                        $alertMsg = "DBエラーのため、Queue削除できませんでした。システム管理者に連絡してください";
+                    }
+
+                }            
+                
             // Update the queue if the user wants that.
             }elseif (isset($params["change"])){
 
-                $existingQueue->fill(
-                        [
-                        "queue_id"     => $params["queue_id"],
-                        "queue_name"   => $params["queue_name"],
-                        "action_url"   => $params["action_url"],
-                        "wait_url"     => $params["wait_url"],
-                        "guidance_url" => $params["guidance_url"],
-                        ]
-                    );
+                try{
 
-                $existingQueue->save();
+                    // Begin Transaction.
+                    $dbConn->getPdo()->beginTransaction();
+                    
+                    // Change the queue data.
+                    $existingQueue->fill(
+                             [
+                             "queue_id"     => $params["queue_id"],
+                             "queue_name"   => $params["queue_name"],
+                             "max_size"     => $params["max_size"],
+                             "action_url"   => $params["action_url"],
+                             "wait_url"     => $params["wait_url"],
+                             "guidance_url" => $params["guidance_url"],
+                             ]
+                         );
 
-                // Set Message
-                $alertLv    = \Runa_CCA\View\Msg::ALERT_SUCCESS;
-                $alertTitle = \Runa_CCA\View\Msg::TITLE_SUCCESS;
-                $alertMsg   = "キュー変更が成功しました。";
+                    $existingQueue->save();
+
+                    // Update Twilio information.
+                    $twilioClient = (new \Runa_CCA\Model\Twilio())->getTwilioClient();
+                    $twilioQueue = $twilioClient->account->queues->get($existingQueue->twilio_queue_id);
+                    $twilioQueue->update(["MaxSize" => $params["max_size"]]);
+
+                    // Commit.
+                    $dbConn->getPdo()->commit();
+                     
+                    // Set Message
+                    $alertLv    = \Runa_CCA\View\Msg::ALERT_SUCCESS;
+                    $alertTitle = \Runa_CCA\View\Msg::TITLE_SUCCESS;
+                    $alertMsg   = "キュー変更が成功しました。";
+
+                }catch(\Services_Twilio_RestException $tre){
+
+                    // Rollback.
+                    $dbConn->getPdo()->rollback();
+                    
+                    // Debug
+                    $app->log->debug(strftime("[%Y/%m/%d %H:%M:%S]:".__FILE__.":".__LINE__));
+                    $app->log->debug("Services_Twilio_RestException:".$tre->getStatus().":".$tre->getInfo());
+
+                    // Twilio Error
+                    // Set Message
+                    $alertLv    = \Runa_CCA\View\Msg::ALERT_DANGER;
+                    $alertTitle = \Runa_CCA\View\Msg::TITLE_DANGER;
+                    $alertMsg   = "Twilioエラーのため、Queue変更できませんでした。システム管理者に連絡してください";
+
+                }catch(\Exception $pe){
+                    
+                    // Rollback.
+                    $dbConn->getPdo()->rollback();
+                    
+                    // Get Child Exception because PDO Exception is nested.
+                    $e = $pe->getPrevious();
+                    
+                    // Set error message.
+                    if($e == NULL){
+                        $errorMsg = $pe->getCode().":".$pe->getMessage();
+                    }else{
+                        $errorMsg = $e->getCode().":".$e->getMessage();
+                    }
+
+                    // Debug
+                    $app->log->debug(strftime("[%Y/%m/%d %H:%M:%S]:".__FILE__.":".__LINE__));
+                    $app->log->debug("Exception:".$errorMsg);
+
+                    // DB Error
+                    // Set Message
+                    $alertLv    = \Runa_CCA\View\Msg::ALERT_DANGER;
+                    $alertTitle = \Runa_CCA\View\Msg::TITLE_DANGER;
+                    $alertMsg   = "DBエラーのため、Queue削除できませんでした。システム管理者に連絡してください";
+
+                }
 
             // Go to Queue Add page because the queue id is duplicated.
             }else{
@@ -279,13 +473,13 @@ class QueueConfiguration {
                 $queueValidate["queue_id"] = "キューIDが重複しています。";
 
                 $render->display(
-                            "QUEUENEW",
-                            $params,
-                            $queueValidate,
-                            "ERROR",
-                            $alertLv,
-                            $alertTitle,
-                            $alertMsg
+                            "QUEUENEW",     // Switch Flag
+                            $params,        // Queue List
+                            $queueValidate, // Result of Validation
+                            "ERROR",        // Flag (Update or not)
+                            $alertLv,       // Alert Level
+                            $alertTitle,    // Alert Title
+                            $alertMsg       // Alert Message
                         );
                 return;
 
@@ -293,7 +487,7 @@ class QueueConfiguration {
 
         }
         // Get all queue data.
-        $queues = \Runa_CCA\Model\Queue::all();
+        $queues = \Runa_CCA\Model\Database\Queue::all();
 
         // Set Session Data as global in Twig Template.
         $twig = $app->view()->getEnvironment();
@@ -302,11 +496,11 @@ class QueueConfiguration {
         // Go to Queue List page.
         $render = new \Runa_CCA\View\Render($app);
         $render->display(
-                    "QUEUELIST",
-                    $queues,
-                    $alertLv,
-                    $alertTitle,
-                    $alertMsg
+                    "QUEUELIST",  // Switch Flag
+                    $queues,      // Queue List
+                    $alertLv,     // Alert Level
+                    $alertTitle,  // Alert Title
+                    $alertMsg     // Alert Message
                 );
     
     }
@@ -320,10 +514,10 @@ class QueueConfiguration {
     static function modQueue($app, $params){
         
         // DB Connection
-        \Runa_CCA\Model\DB::registerIlluminate();
+        $dbConn = (new \Runa_CCA\Model\DB())->getIlluminateConnection();
 
         // Get the queue data.
-        $existingQueue = \Runa_CCA\Model\Queue::find($params["queue_id"]);
+        $existingQueue = \Runa_CCA\Model\Database\Queue::find($params["queue_id"]);
 
         // Set Message
         $alertLv    = \Runa_CCA\View\Msg::ALERT_INFO;
@@ -337,13 +531,13 @@ class QueueConfiguration {
         // Go to Queue Add page with the information of the queue.
         $render = new \Runa_CCA\View\Render($app);
         $render->display(
-                    "QUEUENEW",
-                    $existingQueue,
-                    NULL,
-                    "CHANGE",
-                    $alertLv,
-                    $alertTitle,
-                    $alertMsg
+                    "QUEUENEW",     // Switch Flag
+                    $existingQueue, // Queue List
+                    NULL,           // Result of Validation
+                    "CHANGE",       // Flag (Update or not)
+                    $alertLv,       // Alert Level
+                    $alertTitle,    // Alert Title
+                    $alertMsg       // Alert Message
                 );
     }    
 }

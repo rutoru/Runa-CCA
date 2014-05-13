@@ -34,9 +34,9 @@ class QueueUrl {
     public function insert($params){
 
         // DB Connection
-        \Runa_CCA\Model\DB::registerIlluminate();
+        $dbConn = (new \Runa_CCA\Model\DB())->getIlluminateConnection();
         
-        $queue = new \Runa_CCA\Model\QueueData();
+        $queue = new \Runa_CCA\Model\Database\QueueData();
         
         // This parameter is set when the IncomingPhoneNumber 
         // that received the call has had its VoiceCallerIdLookup value set to true ($0.01 per look up).
@@ -64,7 +64,7 @@ class QueueUrl {
         
         $queue->save();
 
-        // キューイングメッセージ送出
+        // Play the dequeue message.
         $this->response->say("オペレータにおつなぎします。",
                         ['language' => \Base\Conf::LANG]);
         

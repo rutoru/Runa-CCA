@@ -34,7 +34,7 @@ class EnqueAction {
     public function insert($params){
 
         // DB Connection
-        \Runa_CCA\Model\DB::registerIlluminate();
+        $dbConn = (new \Runa_CCA\Model\DB())->getIlluminateConnection();
         
         $enqueue = new \Runa_CCA\Model\EnqueueData();
 

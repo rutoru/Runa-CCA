@@ -36,18 +36,9 @@ class Configuration {
         // Go to the config portal page if the user has already been verified.
         }else{
 
-            // Chek the operator level.
-            // The operator with level SYSTEMADMIN or SUPERVISOR can log in.
+            // Check the operator level.
             if(isset($_SESSION['operator_lv'])){
                 
-                if ($_SESSION['operator_lv'] > (new \Runa_CCA\Model\OperatorLevel())->getConfigBoarder()){
-                    
-                    // Display an error and route to login page.
-                    $render = new \Runa_CCA\View\Render($app);
-                    $render->display("LOGINERR");
-                    
-                }else{
-
                 // Set Session Data as global in Twig Template.
                 $twig = $app->view()->getEnvironment();
                 $twig->addGlobal("session", $_SESSION);            
@@ -55,15 +46,22 @@ class Configuration {
                 // Go to Portal page
                 $render = new \Runa_CCA\View\Render($app);
                 $render->display("CONFIGPORTAL");
-                
-                }
-                
+                                
             // No Session value operator_lv
             }else{
             
+                // Destroy Session
+                $_SESSION = array();
+
+                if (isset($_COOKIE[session_name()])){
+                    setcookie(session_name(), '', time() - 3600, '/');
+                }
+
+                session_destroy();
+
                 // Display an error and route to login page.
                 $render = new \Runa_CCA\View\Render($app);
-                $render->display("LOGINERR");
+                $render->display("NOAUTH");
 
             }
             

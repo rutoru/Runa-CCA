@@ -30,6 +30,8 @@ class Conf {
     const CHAR         = "UTF-8";
     const LANG         = "ja-jp";
     const APP_NAME     = "Runa-CCA";
+    const LOG_ONOFF    = true;
+    const LOG_LEVEL    = \Slim\Log::DEBUG;
     
     /**
      * Constants for Database (Used in DB Class)

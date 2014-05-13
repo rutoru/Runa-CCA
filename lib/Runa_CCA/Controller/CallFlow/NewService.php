@@ -21,7 +21,7 @@ class NewService {
         $params = $app->request->params();
 
         // Verify and start.
-        if($params["AccountSid"] == \Base\Conf::ACCOUNT_SID){
+        if((new \Runa_CCA\Model\Twilio())->validateTwilioRequest($app, $params)){
             
                 switch ($method){
 

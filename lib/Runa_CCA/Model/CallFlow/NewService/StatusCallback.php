@@ -34,9 +34,9 @@ class StatusCallback {
     public function insert($params){
 
         // DB Connection
-        \Runa_CCA\Model\DB::registerIlluminate();
+        $dbConn = (new \Runa_CCA\Model\DB())->getIlluminateConnection();
         
-        $statusCb = new \Runa_CCA\Model\StatusCallbackData();
+        $statusCb = new \Runa_CCA\Model\Database\StatusCallbackData();
         
         // This parameter is set when the IncomingPhoneNumber 
         // that received the call has had its VoiceCallerIdLookup value set to true ($0.01 per look up).

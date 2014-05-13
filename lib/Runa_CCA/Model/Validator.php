@@ -75,6 +75,10 @@ class Validator extends \Respect\Validation\Validator {
             $error_list["queue_name"] = "全角16字以内・半角32字以内にしてください。";
         }
 
+        if(!static::notEmpty()->int()->max(1001)->validate($params["max_size"])){
+            $error_list["max_size"] = "1,000以内にしてください。";
+        }
+
         if(!static::notEmpty()->length(1,128)->charset('ASCII')->validate($params["action_url"])){
             $error_list["action_url"] = "128字以内の半角文字のみにしてください。";
         }
@@ -101,7 +105,7 @@ class Validator extends \Respect\Validation\Validator {
     /**
      * validateOpQueue
      * 
-     * @param \Runa_CCA\Model\Queue $queues Queue List
+     * @param \Runa_CCA\Model\Database\Queue $queues Queue List
      * @param String[] $params User Input Data
      * @return TwiMLApp Token
      */

@@ -5,7 +5,7 @@
  * @author rutoru
  * @package Runa-CCA
  */
-namespace Runa_CCA\Model;
+namespace Runa_CCA\Model\Database;
 
 class OperatorQueue extends \Illuminate\Database\Eloquent\Model{
     

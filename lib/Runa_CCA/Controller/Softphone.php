@@ -31,18 +31,21 @@ class Softphone {
  
             // Display an error and route to login page.
             $render = new \Runa_CCA\View\Render($app);
-            $render->display("LOGINERR");
+            $render->display("NOAUTH");
 
         // Go to the config portal page if the user has already been verified.
         }else{
 
+            // Create and Set Twilio Information.
+            $token   = (new \Runa_CCA\Model\Twilio())->getTwilioToken($_SESSION['client_name']);
+            
             // Set Session Data as global in Twig Template.
             $twig = $app->view()->getEnvironment();
             $twig->addGlobal("session", $_SESSION);            
 
             // Go to Portal page
             $render = new \Runa_CCA\View\Render($app);
-            $render->display("MAIN");
+            $render->display("SOFTPHONE", $token);
 
         }
     }

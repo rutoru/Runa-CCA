@@ -20,7 +20,7 @@ class TwiMLApp {
         $params = $app->request->params();
         
         // Verify and start.
-        if($params["AccountSid"] == \Base\Conf::ACCOUNT_SID){
+        if((new \Runa_CCA\Model\Twilio())->validateTwilioRequest($app, $params)){
 
             $response = (new \Runa_CCA\Model\TwiMLApp())->createTwiMLApp($params);
             (new \Runa_CCA\View\Twiml())->createTwiml($response);

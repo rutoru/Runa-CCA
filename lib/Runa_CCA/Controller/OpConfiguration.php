@@ -32,65 +32,65 @@ class OpConfiguration {
  
             // Display an error and route to login page.
             $render = new \Runa_CCA\View\Render($app);
-            $render->display("LOGINERR");
+            $render->display("NOAUTH");
 
         // Switch the page if the user has already been verified.
         }else{
             
-            // Chek the operator level.
+            // Check the operator level.
             // The operator with level SYSTEMADMIN or SUPERVISOR can log in.
-            if(isset($_SESSION['operator_lv'])){
-                
-                if ($_SESSION['operator_lv'] > (new \Runa_CCA\Model\OperatorLevel())->getConfigBoarder()){
-                    
-                    // Display an error and route to login page.
-                    $render = new \Runa_CCA\View\Render($app);
-                    $render->display("LOGINERR");
-                    
-                }else{
-            
-                    switch ($menu){
+            if(isset($_SESSION['operator_lv']) && 
+                     $_SESSION['operator_lv'] <= (new \Runa_CCA\Model\Database\OperatorLevel())->getOpConfigBorder()){
 
-                        // List operators.
-                        case "OPERATORLIST":
+                switch ($menu){
 
-                            Self::listOperator($app);
-                            break;
+                    // List operators.
+                    case "LISTOPERATOR":
 
-                        // New operator.
-                        case "OPERATORNEW":
+                        Self::listOperator($app);
+                        break;
 
-                            Self::newOperator($app);
-                            break;
+                    // New operator.
+                    case "NEWOPERATOR":
 
-                        // Add operator.
-                        case "OPERATORADD":
+                        Self::newOperator($app);
+                        break;
 
-                            Self::addOperator($app,$params);
-                            break;
+                    // Add/Change/Delete operator.
+                    case "MNGOPERATOR":
 
-                        // Modify operator.
-                        case "OPERATORMOD":
+                        Self::mngOperator($app,$params);
+                        break;
 
-                            Self::modOperator($app,$params);
-                            break;
+                    // Modify operator.
+                    case "MODOPERATOR":
 
-                        // Go to Error
-                        default :
+                        Self::modOperator($app,$params);
+                        break;
 
-                            \Runa_CCA\Controller\Error::display("ERROR");
-                            break;
+                    // Go to Error
+                    default :
+
+                        \Runa_CCA\Controller\Error::display("ERROR");
+                        break;
 
                     }
-                }
-                
-            // No Session value operator_lv
+                    
             }else{
+
+                // Destroy Session
+                $_SESSION = array();
+
+                if (isset($_COOKIE[session_name()])){
+                    setcookie(session_name(), '', time() - 3600, '/');
+                }
+
+                session_destroy();
 
                 // Display an error and route to login page.
                 $render = new \Runa_CCA\View\Render($app);
-                $render->display("LOGINERR");
-                
+                $render->display("NOAUTH");
+
             }
 
         }
@@ -104,7 +104,7 @@ class OpConfiguration {
     static function listOperator($app){
         
         // DB Connection
-        \Runa_CCA\Model\DB::registerIlluminate();
+        $dbConn = (new \Runa_CCA\Model\DB())->getIlluminateConnection();
 
         // Set Message
         $alertLv    = \Runa_CCA\View\Msg::ALERT_INFO;
@@ -112,9 +112,9 @@ class OpConfiguration {
         $alertMsg   = "オペレータ一覧画面です。";
 
         // Get All operators data.
-        $operators = \Runa_CCA\Model\Operator::all();
+        $operators = \Runa_CCA\Model\Database\Operator::all();
         // Get All operator level.
-        $oplevels = (new \Runa_CCA\Model\OperatorLevel())->getOperatorLevels();
+        $oplevels = (new \Runa_CCA\Model\Database\OperatorLevel())->getOperatorLevels();
 
         // Set Session Data as global in Twig Template.
         $twig = $app->view()->getEnvironment();
@@ -123,13 +123,13 @@ class OpConfiguration {
         // Go to Operator List page.
         $render = new \Runa_CCA\View\Render($app);
         $render->display(
-                        "OPERATORLIST",  // Switch Flag
-                        $operators,      // Operator List
-                        $oplevels,       // Operator Level List
-                        $alertLv,        // Alert Level
-                        $alertTitle,     // Alert Title
-                        $alertMsg        // Alert Message
-                    );
+                    "OPERATORLIST",  // Switch Flag
+                    $operators,      // Operator List
+                    $oplevels,       // Operator Level List
+                    $alertLv,        // Alert Level
+                    $alertTitle,     // Alert Title
+                    $alertMsg        // Alert Message
+                );
         
     }
     
@@ -141,11 +141,11 @@ class OpConfiguration {
     static function newOperator($app){
         
         // DB Connection
-        \Runa_CCA\Model\DB::registerIlluminate();
+        $dbConn = (new \Runa_CCA\Model\DB())->getIlluminateConnection();
 
         // Get All queue data
-        $queues   = \Runa_CCA\Model\Queue::all();
-        $oplevels = (new \Runa_CCA\Model\OperatorLevel())->getOperatorLevels();
+        $queues   = \Runa_CCA\Model\Database\Queue::all();
+        $oplevels = (new \Runa_CCA\Model\Database\OperatorLevel())->getOperatorLevels();
         
         // Set Message
         $alertLv    = \Runa_CCA\View\Msg::ALERT_INFO;
@@ -159,41 +159,41 @@ class OpConfiguration {
         // Go to Operator Add page.
         $render = new \Runa_CCA\View\Render($app);
         $render->display(
-                        "OPERATORNEW",  // Switch Flag
-                        $queues,        // Queue List
-                        NULL,           // Operator List
-                        NULL,           // Queues the operator has
-                        $oplevels,      // Operator Levels
-                        NULL,           // Operator Level the operator has
-                        NULL,           // Result of Validation
-                        NULL,           // Flag (Update or not)
-                        $alertLv,       // Alert Level
-                        $alertTitle,    // Alert Title
-                        $alertMsg       // Alert Message
-                    );
+                    "OPERATORNEW",  // Switch Flag
+                    $queues,        // Queue List
+                    NULL,           // Operator List
+                    NULL,           // Queues the operator has
+                    $oplevels,      // Operator Levels
+                    NULL,           // Operator Level the operator has
+                    NULL,           // Result of Validation
+                    NULL,           // Flag (Update or not)
+                    $alertLv,       // Alert Level
+                    $alertTitle,    // Alert Title
+                    $alertMsg       // Alert Message
+                );
         
     }
 
     /**
-     * addOperator
+     * mngOperator
      * 
      * @param \Slim\Slim $app Slim Object
      * @param Array $params Input parameters
      */   
-    static function addOperator($app, $params){
+    static function mngOperator($app, $params){
         
         // DB Connection
-        \Runa_CCA\Model\DB::registerIlluminate();
+        $dbConn = (new \Runa_CCA\Model\DB())->getIlluminateConnection();
 
         // Validate operator
         $operatorValidate = \Runa_CCA\Model\Validator::validateOperator($params);
         
         // Validate Operator Levels
-        $operatorLevels = (new \Runa_CCA\Model\OperatorLevel())->getOperatorLevels();
+        $operatorLevels = (new \Runa_CCA\Model\Database\OperatorLevel())->getOperatorLevels();
         $operatorLevelValidate = \Runa_CCA\Model\Validator::validateOpLevel($operatorLevels, $params["operator_level"]);
 
         // Validate operator queue data
-        $queues = \Runa_CCA\Model\Queue::all();
+        $queues = \Runa_CCA\Model\Database\Queue::all();
         $queueValidate = \Runa_CCA\Model\Validator::validateOpQueue($queues,$params["operator_queues"]);
 
         // Go to Error page if the queue and operator level validation failed. This is an illegal access.
@@ -224,104 +224,48 @@ class OpConfiguration {
             // Go to Operator Add page with the result of the validation.
             $render = new \Runa_CCA\View\Render($app);
             $render->display(
-                            "OPERATORNEW",              // Switch Flag
-                            $queues,                    // Queue List
-                            $params,                    // Operator List
-                            $params["operator_queues"], // Queues the operator has
-                            $operatorLevels,            // Operator Levels
-                            $params["operator_level"],  // Operator Level the operator has
-                            $operatorValidate,          // Result of Validation
-                            $flag,                      // Flag (Update or not)
-                            $alertLv,                   // Alert Level
-                            $alertTitle,                // Alert Title
-                            $alertMsg                   // Alert Message   
-                        );
+                        "OPERATORNEW",              // Switch Flag
+                        $queues,                    // Queue List
+                        $params,                    // Operator List
+                        $params["operator_queues"], // Queues the operator has
+                        $operatorLevels,            // Operator Levels
+                        $params["operator_level"],  // Operator Level the operator has
+                        $operatorValidate,          // Result of Validation
+                        $flag,                      // Flag (Update or not)
+                        $alertLv,                   // Alert Level
+                        $alertTitle,                // Alert Title
+                        $alertMsg                   // Alert Message   
+                    );
                      
             return;
         }
 
         // Check if the operator exists.
-        $existingOperator = \Runa_CCA\Model\Operator::find($params["operator_id"]);
+        $existingOperator = \Runa_CCA\Model\Database\Operator::find($params["operator_id"]);
 
         // Insert the operator if the operator doesn't exist.
         if (empty($existingOperator)){
 
-            $operator = new \Runa_CCA\Model\Operator();
-            $operator->operator_id       = $params["operator_id"];
-            $operator->password          = password_hash($params["password"], PASSWORD_DEFAULT);
-            $operator->last_name         = $params["last_name"];
-            $operator->first_name        = $params["first_name"];
-            $operator->client_name       = $params["client_name"];
-            $operator->telnum            = $params["telnum"];
-            $operator->operator_level_id = $params["operator_level"];
-            $operator->save();
+            try{
+                
+                // Begin Transaction.
+                $dbConn->getPdo()->beginTransaction();
+                
+                // Insert the operator data.
+                $operator = new \Runa_CCA\Model\Database\Operator();
+                $operator->operator_id       = $params["operator_id"];
+                $operator->password          = password_hash($params["password"], PASSWORD_DEFAULT);
+                $operator->last_name         = $params["last_name"];
+                $operator->first_name        = $params["first_name"];
+                $operator->client_name       = $params["client_name"];
+                $operator->telnum            = $params["telnum"];
+                $operator->operator_level_id = $params["operator_level"];
+                $operator->save();
 
-            foreach ($params["operator_queues"] as $queue){
-
-                $existingQueue = new \Runa_CCA\Model\OperatorQueue();
-                $existingQueue->fill(
-                        [
-                        "operator_id" => $params["operator_id"],
-                        "queue_id"    => $queue,
-                        ]
-                    );
-
-                $existingQueue->save();
-            }
-
-            // Set Message
-            $alertLv    = \Runa_CCA\View\Msg::ALERT_SUCCESS;
-            $alertTitle = \Runa_CCA\View\Msg::TITLE_SUCCESS;
-            $alertMsg   = "オペレータ追加が成功しました。";
-
-        // If the operator exists.
-        }else{
-
-            // Delete the operator if the user wants that.
-            if (isset($params["delete"])){
-
-                // Delete the operator_queue data.
-                $affectedRowsQue
-                        = \Runa_CCA\Model\OperatorQueue::where(
-                                'operator_id', '=', $params["operator_id"])
-                                ->delete();  
-
-                // Delete operator data.
-                $affectedRowsOpe
-                        = \Runa_CCA\Model\Operator::where(
-                                'operator_id', '=', $params["operator_id"])
-                                ->delete();  
-
-                // Set Message
-                $alertLv    = \Runa_CCA\View\Msg::ALERT_SUCCESS;
-                $alertTitle = \Runa_CCA\View\Msg::TITLE_SUCCESS;
-                $alertMsg   = "オペレータ削除が成功しました。";
-
-            // Update the queue if the user wants that.
-            }elseif (isset($params["change"])){
-
-                $existingOperator->fill(
-                        [
-                        "operator_id"       => $params["operator_id"],
-                        "last_name"         => $params["last_name"],
-                        "first_name"        => $params["first_name"],
-                        "client_name"       => $params["client_name"],
-                        "telnum"            => $params["telnum"],
-                        "operator_level_id" => $params["operator_level"],
-                        ]
-                    );
-
-                $existingOperator->save();
-
-                // Delete queue data.
-                $affectedRows = \Runa_CCA\Model\OperatorQueue::where(
-                                    'operator_id', '=', $params["operator_id"])
-                                    ->delete();
-
-                // Set queue data.
+                // Insert the queues the operator has.
                 foreach ($params["operator_queues"] as $queue){
 
-                    $existingQueue = new \Runa_CCA\Model\OperatorQueue();
+                    $existingQueue = new \Runa_CCA\Model\Database\OperatorQueue();
                     $existingQueue->fill(
                             [
                             "operator_id" => $params["operator_id"],
@@ -330,13 +274,146 @@ class OpConfiguration {
                         );
 
                     $existingQueue->save();
+                }
 
-                }                        
-
+                // Commit.
+                $dbConn->getPdo()->commit();
+                
                 // Set Message
                 $alertLv    = \Runa_CCA\View\Msg::ALERT_SUCCESS;
                 $alertTitle = \Runa_CCA\View\Msg::TITLE_SUCCESS;
-                $alertMsg   = "オペレータ変更が成功しました。";
+                $alertMsg   = "オペレータ追加が成功しました。";
+
+                
+            }catch(\Exception $e){
+
+                // Rollback.
+                $dbConn->getPdo()->rollback();
+
+                // Debug
+                $app->log->debug(strftime("[%Y/%m/%d %H:%M:%S]:".__FILE__.":".__LINE__));
+                $app->log->debug("Exception:".$e->getCode().":".$e->getMessage());
+
+                // Set Message
+                $alertLv    = \Runa_CCA\View\Msg::ALERT_DANGER;
+                $alertTitle = \Runa_CCA\View\Msg::TITLE_DANGER;
+                $alertMsg   = "DBエラーのため、オペレータ追加ができませんでした。システム管理者に連絡してください";
+                
+            }            
+
+
+        // If the operator exists.
+        }else{
+
+            // Delete the operator if the user wants that.
+            if (isset($params["delete"])){
+
+                try{
+
+                    // Begin Transaction.
+                    $dbConn->getPdo()->beginTransaction();
+                
+                    // Delete the operator_queue data.
+                    $affectedRowsQue
+                            = \Runa_CCA\Model\Database\OperatorQueue::where(
+                                    'operator_id', '=', $params["operator_id"])
+                                    ->delete();
+
+                    // Delete operator data.
+                    $affectedRowsOpe
+                            = \Runa_CCA\Model\Database\Operator::where(
+                                    'operator_id', '=', $params["operator_id"])
+                                    ->delete();  
+
+                    // Commit.
+                    $dbConn->getPdo()->commit();
+
+                    // Set Message
+                    $alertLv    = \Runa_CCA\View\Msg::ALERT_SUCCESS;
+                    $alertTitle = \Runa_CCA\View\Msg::TITLE_SUCCESS;
+                    $alertMsg   = "オペレータ削除が成功しました。";
+
+                }catch(\Exception $e){
+
+                    // Rollback.
+                    $dbConn->getPdo()->rollback();
+
+                    // Debug
+                    $app->log->debug(strftime("[%Y/%m/%d %H:%M:%S]:".__FILE__.":".__LINE__));
+                    $app->log->debug("Exception:".$e->getCode().":".$e->getMessage());
+
+                    // Set Message
+                    $alertLv    = \Runa_CCA\View\Msg::ALERT_DANGER;
+                    $alertTitle = \Runa_CCA\View\Msg::TITLE_DANGER;
+                    $alertMsg   = "DBエラーのため、オペレータ削除ができませんでした。システム管理者に連絡してください";
+
+                }
+                
+            // Update the queue if the user wants that.
+            }elseif (isset($params["change"])){
+
+                try{
+                
+                    // Begin Transaction.
+                    $dbConn->getPdo()->beginTransaction();
+
+                    // Change the operator data.
+                    $existingOperator->fill(
+                            [
+                            "operator_id"       => $params["operator_id"],
+                            "last_name"         => $params["last_name"],
+                            "first_name"        => $params["first_name"],
+                            "client_name"       => $params["client_name"],
+                            "telnum"            => $params["telnum"],
+                            "operator_level_id" => $params["operator_level"],
+                            ]
+                        );
+
+                    $existingOperator->save();
+
+                    // Delete queue data.
+                    $affectedRows = \Runa_CCA\Model\Database\OperatorQueue::where(
+                                        'operator_id', '=', $params["operator_id"])
+                                        ->delete();
+
+                    // Set queue data.
+                    foreach ($params["operator_queues"] as $queue){
+
+                        $existingQueue = new \Runa_CCA\Model\Database\OperatorQueue();
+                        $existingQueue->fill(
+                                [
+                                "operator_id" => $params["operator_id"],
+                                "queue_id"    => $queue,
+                                ]
+                            );
+
+                        $existingQueue->save();
+
+                    }                        
+
+                    // Commit.
+                    $dbConn->getPdo()->commit();
+
+                    // Set Message
+                    $alertLv    = \Runa_CCA\View\Msg::ALERT_SUCCESS;
+                    $alertTitle = \Runa_CCA\View\Msg::TITLE_SUCCESS;
+                    $alertMsg   = "オペレータ変更が成功しました。";
+                
+                }catch(\Exception $e){
+
+                    // Rollback.
+                    $dbConn->getPdo()->rollback();
+
+                    // Debug
+                    $app->log->debug(strftime("[%Y/%m/%d %H:%M:%S]:".__FILE__.":".__LINE__));
+                    $app->log->debug("Exception:".$e->getCode().":".$e->getMessage());
+
+                    // Set Message
+                    $alertLv    = \Runa_CCA\View\Msg::ALERT_DANGER;
+                    $alertTitle = \Runa_CCA\View\Msg::TITLE_DANGER;
+                    $alertMsg   = "DBエラーのため、オペレータ変更ができませんでした。システム管理者に連絡してください";
+
+                }
 
             // Go to Queue Add page because the operator id is duplicated.
             }else{
@@ -355,25 +432,25 @@ class OpConfiguration {
                 $twig->addGlobal("session", $_SESSION);
                 
                 $render->display(
-                                "OPERATORNEW",              // Switch Flag
-                                $queues,                    // Queue List
-                                $params,                    // Operator List
-                                $params["operator_queues"], // Queues the operator has
-                                $operatorLevels,            // Operator Levels
-                                $params["operator_level"],  // Operator Level the operator has
-                                $operatorValidate,          // Result of Validation
-                                "ERROR",                    // Flag (Update or not)
-                                $alertLv,                   // Alert Level
-                                $alertTitle,                // Alert Title
-                                $alertMsg                   // Alert Message   
-                            );
+                            "OPERATORNEW",              // Switch Flag
+                            $queues,                    // Queue List
+                            $params,                    // Operator List
+                            $params["operator_queues"], // Queues the operator has
+                            $operatorLevels,            // Operator Levels
+                            $params["operator_level"],  // Operator Level the operator has
+                            $operatorValidate,          // Result of Validation
+                            "ERROR",                    // Flag (Update or not)
+                            $alertLv,                   // Alert Level
+                            $alertTitle,                // Alert Title
+                            $alertMsg                   // Alert Message   
+                        );
                 return;
                 
             }
 
         }
         // Get All operators data
-        $operators = \Runa_CCA\Model\Operator::all();
+        $operators = \Runa_CCA\Model\Database\Operator::all();
 
         // Set Session Data as global in Twig Template.
         $twig = $app->view()->getEnvironment();
@@ -382,16 +459,16 @@ class OpConfiguration {
         // Go to Operator List page.
         $render = new \Runa_CCA\View\Render($app);
         $render->display(
-                        "OPERATORLIST", // Switch Flag
-                        $operators,     // Operator List
-                        $operatorLevels,// Operator Level List
-                        $alertLv,       // Alert Level
-                        $alertTitle,    // Alert Title
-                        $alertMsg       // Alert Message 
-                    );        
+                    "OPERATORLIST", // Switch Flag
+                    $operators,     // Operator List
+                    $operatorLevels,// Operator Level List
+                    $alertLv,       // Alert Level
+                    $alertTitle,    // Alert Title
+                    $alertMsg       // Alert Message 
+                );        
     }        
     
-     /**
+    /**
      * modOperator
      * 
      * @param \Slim\Slim $app Slim Object
@@ -414,35 +491,35 @@ class OpConfiguration {
             // Go to Operator Add page with the information of the operator.
             $render = new \Runa_CCA\View\Render($app);
             $render->display(
-                            "PASSWORDCHANGE",       // Switch Flag
-                            $params['operator_id'], // Operator ID
-                            NULL,                   // Result of Validation
-                            NULL,                   // Flag (Update or not)
-                            $alertLv,               // Alert Level
-                            $alertTitle,            // Alert Title
-                            $alertMsg               // Alert Message 
-                        );
+                        "PASSWORDCHANGE",       // Switch Flag
+                        $params['operator_id'], // Operator ID
+                        NULL,                   // Result of Validation
+                        NULL,                   // Flag (Update or not)
+                        $alertLv,               // Alert Level
+                        $alertTitle,            // Alert Title
+                        $alertMsg               // Alert Message 
+                    );
             return;
 
         }else{
 
             // DB Connection
-            \Runa_CCA\Model\DB::registerIlluminate();
+            $dbConn = (new \Runa_CCA\Model\DB())->getIlluminateConnection();
 
             // Get all queue data
-            $queues = \Runa_CCA\Model\Queue::all();
+            $queues = \Runa_CCA\Model\Database\Queue::all();
 
             // Get Operator Levels
-            $operatorLevels = (new \Runa_CCA\Model\OperatorLevel())->getOperatorLevels();
+            $operatorLevels = (new \Runa_CCA\Model\Database\OperatorLevel())->getOperatorLevels();
             
             // Get all queue data of the operator.
-            $opqueues = \Runa_CCA\Model\OperatorQueue::where('operator_id', '=', $params["operator_id"])->get();
+            $opqueues = \Runa_CCA\Model\Database\OperatorQueue::where('operator_id', '=', $params["operator_id"])->get();
             foreach ($opqueues as $opqueue){
                 $selectedQueues[] = $opqueue->queue_id;
             }
 
             // Get the operator data.
-            $existingOperator = \Runa_CCA\Model\Operator::find($params["operator_id"]);
+            $existingOperator = \Runa_CCA\Model\Database\Operator::find($params["operator_id"]);
 
             // Set Message
             $alertLv    = \Runa_CCA\View\Msg::ALERT_INFO;
@@ -456,18 +533,18 @@ class OpConfiguration {
             // Go to Operator Add page with the information of the operator.
             $render = new \Runa_CCA\View\Render($app);
             $render->display(
-                            "OPERATORNEW",                       // Switch Flag
-                            $queues,                             // Queue List
-                            $existingOperator,                   // Operator List
-                            $selectedQueues,                     // Queues the operator has
-                            $operatorLevels,                     // Operator Levels
-                            $existingOperator["operator_level_id"], // Operator Level the operator has
-                            NULL,                                // Result of Validation
-                            "CHANGE",                            // Flag (Update or not)
-                            $alertLv,                            // Alert Level
-                            $alertTitle,                         // Alert Title
-                            $alertMsg                            // Alert Message  
-                        );
+                        "OPERATORNEW",                       // Switch Flag
+                        $queues,                             // Queue List
+                        $existingOperator,                   // Operator List
+                        $selectedQueues,                     // Queues the operator has
+                        $operatorLevels,                     // Operator Levels
+                        $existingOperator["operator_level_id"], // Operator Level the operator has
+                        NULL,                                // Result of Validation
+                        "CHANGE",                            // Flag (Update or not)
+                        $alertLv,                            // Alert Level
+                        $alertTitle,                         // Alert Title
+                        $alertMsg                            // Alert Message  
+                    );
 
             return;
         }        

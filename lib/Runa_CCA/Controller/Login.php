@@ -50,10 +50,10 @@ class Login {
             if(isset($params['id']) && isset($params['password'])){
 
                 // DB Connection
-                \Runa_CCA\Model\DB::registerIlluminate();
+                $dbConn = (new \Runa_CCA\Model\DB())->getIlluminateConnection();
                 
                 // Search the operator.
-                $operator = \Runa_CCA\Model\Operator::find($params['id']);
+                $operator = \Runa_CCA\Model\Database\Operator::find($params['id']);
 
                 // Go to main page if 'id' exists and 'password' is verified.
                 if(isset($operator) &&
@@ -67,11 +67,10 @@ class Login {
                     $_SESSION['operator_id']    = $operator->operator_id;
                     $_SESSION['operator_lv']    = $operator->operator_level_id;
                     $_SESSION['operator_name']  = $operator->last_name.$operator->first_name;
+                    $_SESSION['client_name']    = $operator->client_name;
                     // Set queues the operator has.
-                    $_SESSION['operator_queue'] = \Runa_CCA\Model\Operator::find($operator->operator_id)->queue;
-                    // Create and Set Twilio Information.
-                    $_SESSION['twilio_token']   = (new \Runa_CCA\Model\TwilioToken())->getTwilioToken($operator->client_name);
-
+                    $_SESSION['operator_queue'] = \Runa_CCA\Model\Database\Operator::find($operator->operator_id)->queue;
+                    
                     // Set Session Data as global in Twig Template.
                     $twig = $app->view()->getEnvironment();
                     $twig->addGlobal("session", $_SESSION);
@@ -163,13 +162,13 @@ class Login {
         // Switch the page if the user has already been verified.
         }else{
             
-            // Chek the operator level.
+            // Check the operator level.
             // The operator with level SYSTEMADMIN or SUPERVISOR can log in.
             if(isset($_SESSION['operator_lv'])){
                 
-                if ($_SESSION['operator_lv'] > (new \Runa_CCA\Model\OperatorLevel())->getConfigBoarder()){
+                if ($_SESSION['operator_lv'] > (new \Runa_CCA\Model\Database\OperatorLevel())->getOpConfigBorder()){
                     
-                    // If the operator wants to change its password, change it.
+                    // If the operator wants to change his/her own password, change it.
                     if($params["operator_id"] == $_SESSION["operator_id"]){
                         
                         Self::changePassword($app,$params);
@@ -224,20 +223,20 @@ class Login {
     static function changePassword($app, $params){
             
         // DB Connection
-        \Runa_CCA\Model\DB::registerIlluminate();
+        $dbConn = (new \Runa_CCA\Model\DB())->getIlluminateConnection();
 
         // Validate
         $passwordValidate = \Runa_CCA\Model\Validator::validatePassword($params);
 
         // Get the operator information.
-        $existingOperator = \Runa_CCA\Model\Operator::find($params["operator_id"]);
+        $existingOperator = \Runa_CCA\Model\Database\Operator::find($params["operator_id"]);
 
         // Go to Error page if the operator validation failed. This is an illegal access.
         if(empty($existingOperator)){
 
             \Runa_CCA\Controller\Error::display("ERROR");
 
-        // Return Operator Add page if the operation validation failed.
+        // Return Password Change page if the password validation failed.
         }elseif ($passwordValidate){
 
             // Set Message
@@ -249,17 +248,17 @@ class Login {
             $twig = $app->view()->getEnvironment();
             $twig->addGlobal("session", $_SESSION);
 
-            // Go to Operator Add page with the result of the validation.
+            // Go back to Password Change page with the result of the validation.
             $render = new \Runa_CCA\View\Render($app);
             $render->display(
-                        "PASSWORDCHANGE",
-                        $params["operator_id"],
-                        $passwordValidate,
-                        "ERROR",
-                        $alertLv,
-                        $alertTitle,
-                        $alertMsg
-                    );
+                            "PASSWORDCHANGE",         // Switch Flag
+                            $params["operator_id"],   // Operator ID
+                            $passwordValidate,        // Result of Validation
+                            "ERROR",                  // Flag (Update or not)
+                            $alertLv,                 // Alert Level
+                            $alertTitle,              // Alert Title
+                            $alertMsg                 // Alert Message 
+                       );
 
         // Change password.
         }else{
@@ -275,10 +274,10 @@ class Login {
             $existingOperator->save();
 
             // Get All operators data.
-            $operators = \Runa_CCA\Model\Operator::all();
+            $operators = \Runa_CCA\Model\Database\Operator::all();
 
             // Get All operator level.
-            $oplevels = (new \Runa_CCA\Model\OperatorLevel())->getOperatorLevels();
+            $oplevels = (new \Runa_CCA\Model\Database\OperatorLevel())->getOperatorLevels();
 
             // Set Message
             $alertLv    = \Runa_CCA\View\Msg::ALERT_SUCCESS;
@@ -342,7 +341,7 @@ class Login {
             $render = new \Runa_CCA\View\Render($app);
             $render->display("LOGINERR");
 
-        // Go to the config portal page if the user has already been verified.
+        // Go to Password Change page if the user has already been verified.
         }else{
             
             // Set Message
@@ -354,7 +353,7 @@ class Login {
             $twig = $app->view()->getEnvironment();
             $twig->addGlobal("session", $_SESSION);
             
-            // Go to Operator Add page with the information of the operator.
+            // Go to Password Change page with the information of the operator.
             $render = new \Runa_CCA\View\Render($app);
             $render->display(
                             "PASSWORDCHANGE",         // Switch Flag

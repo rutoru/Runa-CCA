@@ -5,7 +5,7 @@
  * @author rutoru
  * @package Runa-CCA
  */
-namespace Runa_CCA\Model;
+namespace Runa_CCA\Model\Database;
 
 class OperatorLevel{
     
@@ -51,15 +51,36 @@ class OperatorLevel{
     }
     
     /**
-     * getConfigBoarder
+     * getConfigBorder
      * 
      * @return String Border line of entering the config page
      */
-    public function getConfigBoarder(){
+    public function getConfigBorder(){
         
         return Self::LV_SUPERVISOR_ID;
         
     }
 
+    /**
+     * getOpConfigBorder
+     * 
+     * @return String Border line of entering the config page
+     */
+    public function getOpConfigBorder(){
+        
+        return Self::LV_SUPERVISOR_ID;
+        
+    }
+    
+    /**
+     * getQueueConfigBorder
+     * 
+     * @return String Border line of entering the config page
+     */
+    public function getQueueConfigBorder(){
+        
+        return Self::LV_SYSTEMADMIN_ID;
+        
+    }
     
 }

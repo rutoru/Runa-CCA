@@ -4,10 +4,12 @@ session_start();
 
 // Slim
 $app = new \Slim\Slim([
-    "templates.path" => \Base\Conf::TEMPLATES, // Template
+    'templates.path'  => \Base\Conf::TEMPLATES,     // Template
     'cookies.encrypt' => true,
-    'debug' => \Base\Conf::DEBUG,
-    "view" => new \Slim\Views\Twig()    // Use Twig
+    'debug'           => \Base\Conf::DEBUG,
+    'view'            => new \Slim\Views\Twig(),    // Use Twig
+    'log.enabled'     => \Base\Conf::LOG_ONOFF,
+    'log.level'       => \Base\Conf::LOG_LEVEL,
 ]);
 
 // Get Route
@@ -15,5 +17,3 @@ $app = new \Slim\Slim([
 
 // Run
 $app->run();
-
-           

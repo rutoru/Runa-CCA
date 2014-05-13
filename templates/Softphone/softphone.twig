@@ -6,11 +6,11 @@
  * @package Runa-CCA
  */
 #}
-{% extends "Main/softphone_frame.twig" %}
+{% extends "Softphone/softphone_frame.twig" %}
 
 {% block twilio_setup %}
     {% autoescape true %} 
-      Twilio.Device.setup("{{session.twilio_token}}");
+      Twilio.Device.setup("{{twilio_token}}");
     {% endautoescape %}
 {% endblock twilio_setup %}
 

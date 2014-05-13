@@ -5,7 +5,7 @@
  * @author rutoru
  * @package Runa-CCA
  */
-namespace Runa_CCA\Model;
+namespace Runa_CCA\Model\Database;
 
 class Operator extends \Illuminate\Database\Eloquent\Model{
     
@@ -46,7 +46,7 @@ ENGINE InnoDB;
      */
     public function queue()
     {
-        return $this->belongsToMany('\Runa_CCA\Model\Queue');
+        return $this->belongsToMany('\Runa_CCA\Model\Database\Queue');
     }
     
 }
