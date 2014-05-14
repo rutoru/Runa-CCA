@@ -70,6 +70,6 @@ MySQLのテーブルに格納されます。レポートの参照は、MySQLの�
 ----------
 Copyright &copy; 2014 rutoru
 Licensed under [MIT license][MIT].    
-https://github.com/rutoru/Runa-CCA/blob/master/README.md
+https://github.com/rutoru/Runa-CCA/blob/master/LICENSE
  
 [MIT]: http://www.opensource.org/licenses/mit-license.php
