@@ -87,9 +87,6 @@ class Report {
      */   
     static function displayQueues($app, $params){
         
-        // Initialize waitTimes value.
-        $waitTimes = [0];
-        
         // Initialize wallboard.
         $wallboard = array();
         
@@ -112,6 +109,9 @@ class Report {
 
         // Get the queue values.
         foreach ($stmt->fetchAll() as $twilioQueueId){
+            
+            // Initialize waitTimes value.
+            $waitTimes = [0];
  
             // Get data from Twilio.
             $twilioQueue = $twilioClient->account->queues->get($twilioQueueId["twilio_queue_id"]);
