@@ -202,16 +202,6 @@ class Render {
                     ); 
 
                     break;
-                
-            // WALLBOARD
-            case "WALLBOARD":
-                
-                $this->app->render(
-                    'Report/wallboard_msg.twig', 
-                    [
-                        'wallboards'              => $args[1],    // Wallboard Object Array
-                    ]
-                );  
             
         }
     }

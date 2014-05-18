@@ -23,7 +23,7 @@ class TwiMLApp {
         if((new \Runa_CCA\Model\Twilio())->validateTwilioRequest($app, $params)){
 
             $response = (new \Runa_CCA\Model\TwiMLApp())->createTwiMLApp($params);
-            (new \Runa_CCA\View\Twiml($app))->createTwiml($response);
+            (new \Runa_CCA\View\Twiml())->createTwiml($response);
             
         }else{
             

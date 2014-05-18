@@ -34,10 +34,6 @@ class Route{
         $app->post('/conf/queueadd',   function(){\Runa_CCA\Controller\QueueConfiguration::portal("MNGQUEUE");});
         $app->post('/conf/queuemod',   function(){\Runa_CCA\Controller\QueueConfiguration::portal("MODQUEUE");});
 
-        // Reporting
-        // Wallboard
-        $app->map ('/report/wallboard',  function(){\Runa_CCA\Controller\Report::portal("WALLBOARD");})->via('GET', 'POST');
-        
         // Softphone
         $app->map ('/softphone',       function(){\Runa_CCA\Controller\Softphone::portal();})->via('GET', 'POST');
         

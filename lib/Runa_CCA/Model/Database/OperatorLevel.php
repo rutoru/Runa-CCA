@@ -82,16 +82,5 @@ class OperatorLevel{
         return Self::LV_SYSTEMADMIN_ID;
         
     }
-
-    /**
-     * getReportBorder
-     * 
-     * @return String Border line of entering the report page
-     */
-    public function getReportBorder(){
-        
-        return Self::LV_OPERATOR_ID;
-        
-    }
     
 }
