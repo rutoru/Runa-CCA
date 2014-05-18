@@ -69,38 +69,35 @@ class Twilio {
 
         // Get the request.
         $req = $app->request;
-        
+
         // Get the X-Twilio-Signature header.
         $twilioSignature = $req->headers->get('HTTP_X_TWILIO_SIGNATURE');
-        
+
         // Get the Twilio request URL.
         $url = $req->getUrl().$req->getPath();
-        
+
         // Create Validator
         $validator = new \Services_Twilio_RequestValidator(\Base\Conf::ACCOUNT_TOKEN);
-        
-        // The post variables in the Twilio request.
-        // Validation needs all date of the parameters.
-        $postVars = $params;
-        
+
         // Debug
         $app->log->debug(strftime("[%Y/%m/%d %H:%M:%S]:".__FILE__.":".__LINE__));
         $app->log->debug("Twilio Signature, Requested URL and Posted variables:");
         $app->log->debug(print_r($twilioSignature,true));
         $app->log->debug(print_r($url,true));
-        $app->log->debug(print_r($postVars,true));
+        $app->log->debug(print_r($params,true));
 
         // Validate
-        if ($validator->validate($twilioSignature, $url, $postVars)) {
-            
+        // Validation needs all post parameters.
+        if ($validator->validate($twilioSignature, $url, $params)) {
+
             return true;
-            
+
         }else{
-            
+
             return false;
 
         }
-       
+
     }
     
     

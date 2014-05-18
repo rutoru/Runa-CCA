@@ -1,0 +1,35 @@
+{# 
+/**
+ * Wallboard Template
+ *
+ * @author rutoru
+ * @package Runa-CCA
+ */
+#}
+{% extends "Report/wallboard_frame.twig" %}
+{% block wallboard %}
+    {% autoescape true %}
+
+    <table class="table table-striped table-hover ">
+      <thead>
+        <tr>
+            <th>キューID(Twilio Friendly Name)</th>
+            <th>待ち呼数/最大可能待ち呼数</th>
+            <th>平均待ち時間</th>
+            <th>現在の最長待ち時間</th>
+        </tr>
+      </thead>
+      <tbody>
+            {% for wallboard in wallboards %}
+            <tr>
+                <td>{{wallboard.friendly_name}}</td>
+                <td>{{wallboard.current_size}}/{{wallboard.max_size}}</td>
+                <td>{{wallboard.average_wait_time}}</td>
+                <td>{{wallboard.max_wait_time}}</td>
+            </tr>
+            {% endfor %}
+      </tbody>
+    </table>
+        
+    {% endautoescape %}
+{% endblock wallboard %}

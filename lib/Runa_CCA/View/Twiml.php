@@ -19,26 +19,12 @@ class Twiml {
      * 
      * @param Slim Object 
      */
-    public function __construct($app = NULL){
+    public function __construct($app){
         
         $this->app = $app;
         
     }
     
-    /**
-     * createOperatorTwiml
-     * 
-     * @param \Runa_CCA\Model\TwiMLApp $twilioObj Twilio Object
-     */    
-    public function createOperatorTwiml($twilioObj){
-        
-        $this->app->render(
-                        'Twiml/operator_twiml.twig', 
-                        $twilioObj->getOperator()
-                    );
-        
-    }
- 
     /**
      * createTwiMl
      * 
@@ -46,9 +32,13 @@ class Twiml {
      */    
     public function createTwiml($twilioObj){
         
-        print $twilioObj;
+        $this->app->render(
+            'TwiML/twiml.twig', 
+            [
+                'twiml'         => $twilioObj,
+            ]
+        ); 
         
     }
-
-    
+ 
 }
