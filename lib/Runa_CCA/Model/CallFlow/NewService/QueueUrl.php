@@ -54,10 +54,6 @@ class QueueUrl {
         $queue->ApiVersion      = $params["ApiVersion"];
         $queue->Direction       = $params["Direction"];
         $queue->ForwardedFrom   = $params["ForwardedFrom"];
-        // This parameter is set when the IncomingPhoneNumber 
-        // that received the call has had its VoiceCallerIdLookup value set to true ($0.01 per look up).
-        // from Twilio Site
-        // $enqueue->CallerName    = $params["CallerName"];
         $queue->QueueSid        = $params["QueueSid"];
         $queue->QueueTime       = $params["QueueTime"];
         $queue->DequeingCallSid = $params["DequeingCallSid"];

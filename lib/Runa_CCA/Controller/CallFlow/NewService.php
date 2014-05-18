@@ -29,42 +29,42 @@ class NewService {
                     case "main" :
                     
                         $response = (new \Runa_CCA\Model\CallFlow\NewService\Main())->main($params);
-                        (new \Runa_CCA\View\Twiml())->createTwiml($response);
+                        (new \Runa_CCA\View\Twiml($app))->createTwiml($response);
                         break;
 
                     // Go to Wait
                     case "wait" :
                         
                         $response = (new \Runa_CCA\Model\CallFlow\NewService\Wait())->wait($params);
-                        (new \Runa_CCA\View\Twiml())->createTwiml($response);
+                        (new \Runa_CCA\View\Twiml($app))->createTwiml($response);
                         break;
 
                     // Go to Info
                     case "info" :
                         
                         $response = (new \Runa_CCA\Model\CallFlow\NewService\Info())->info();
-                        (new \Runa_CCA\View\Twiml())->createTwiml($response);
+                        (new \Runa_CCA\View\Twiml($app))->createTwiml($response);
                         break;
                     
                     // Go to EnqueAction
                     case "enqueaction" :
                         
                         $response = (new \Runa_CCA\Model\CallFlow\NewService\EnqueAction())->insert($params);
-                        (new \Runa_CCA\View\Twiml())->createTwiml($response);
+                        (new \Runa_CCA\View\Twiml($app))->createTwiml($response);
                         break;
 
                     // Go to QueueUrl
                     case "guidance" :
                         
                         $response = (new \Runa_CCA\Model\CallFlow\NewService\QueueUrl())->insert($params);
-                        (new \Runa_CCA\View\Twiml())->createTwiml($response);
+                        (new \Runa_CCA\View\Twiml($app))->createTwiml($response);
                         break;
 
                     // Go to StatusCallback
                     case "statuscallback" :
                         
                         $response = (new \Runa_CCA\Model\CallFlow\NewService\StatusCallback())->insert($params);
-                        (new \Runa_CCA\View\Twiml())->createTwiml($response);
+                        (new \Runa_CCA\View\Twiml($app))->createTwiml($response);
                         break;
 
                     
