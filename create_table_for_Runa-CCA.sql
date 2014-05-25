@@ -157,6 +157,4 @@ ENGINE InnoDB;
  */
 INSERT INTO `twilio`.`operator_level` (`operator_level_id`, `operator_level_name`) VALUES (1, 'SystemAdmin'),(2, 'Supervisor'), (3, 'Operator');
 INSERT INTO `twilio`.`operator` (`operator_id`, `password`, `last_name`, `first_name`, `client_name`, `telnum`, `operator_level_id`) VALUES('admin', '$2y$10$XWdgTixMOjWgn5SRXekSv.j8oBXkgZIlNfLxLpXBJUccar3jyQ8ay', 'admin', 'admin', 'admin', '+815099998888', 1);
-INSERT INTO `queue` (`queue_id`, `queue_name`, `action_url`, `wait_url`, `guidance_url`, `twilio_queue_id`) VALUES ('sample', 'sample', 'http://localhost/runa-cca/twilio/callflow/newservice/enqueaction', '/runa-cca/twilio/callflow/newservice/wait', '/runa-cca/twilio/callflow/newservice/guidance', NULL);
-INSERT INTO `twilio`.`operator_queue` (`id`, `operator_id`, `queue_id`) VALUES ('1', 'admin', 'sample');
 

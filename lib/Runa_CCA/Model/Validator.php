@@ -66,9 +66,10 @@ class Validator extends \Respect\Validation\Validator {
     static function validateQueue(array $params){
 
         $error_list = [];
+        $additionalChars = "#_-";
         
-        if(!static::notEmpty()->alnum()->length(1,20)->validate($params["queue_id"])){
-            $error_list["queue_id"] = "20字以内の半角の英数文字のみにしてください。";
+        if(!static::notEmpty()->noWhitespace()->alnum($additionalChars)->length(1,20)->validate($params["queue_id"])){
+            $error_list["queue_id"] = "20字以内の半角の英数文字のみで、空白は入れないでください。特殊文字は{$additionalChars}のみです。";
         }
         
         if(!static::notEmpty()->length(1,32)->validate($params["queue_name"])){

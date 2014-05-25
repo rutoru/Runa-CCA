@@ -39,6 +39,12 @@ class Softphone {
             // Create and Set Twilio Information.
             $token   = (new \Runa_CCA\Model\Twilio())->getTwilioToken($_SESSION['client_name']);
             
+            // DB Connection
+            $dbConn = (new \Runa_CCA\Model\DB())->getIlluminateConnection();
+            
+            // Update queues the operator has.
+            $_SESSION['operator_queue'] = \Runa_CCA\Model\Database\Operator::find($_SESSION['operator_id'])->queue;
+            
             // Set Session Data as global in Twig Template.
             $twig = $app->view()->getEnvironment();
             $twig->addGlobal("session", $_SESSION);            

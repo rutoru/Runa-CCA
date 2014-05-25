@@ -503,6 +503,9 @@ class OpConfiguration {
 
         }else{
 
+            // Declar for the operator who doesn't have any queues.
+            $selectedQueues = array();
+            
             // DB Connection
             $dbConn = (new \Runa_CCA\Model\DB())->getIlluminateConnection();
 

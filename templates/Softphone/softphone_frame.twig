@@ -13,7 +13,7 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Runa-CCA</title>
+    <title>Runa-CCA Softphone</title>
 
     <!-- Bootstrap -->
     <link href="/runa-cca/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
@@ -26,58 +26,113 @@
     
     <script type="text/javascript"
       src="//static.twilio.com/libs/twiliojs/1.1/twilio.min.js"></script>
-    <script type="text/javascript"
-      src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js">
-    </script>
+    
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <script src="/runa-cca/vendor/bootstrap/js/bootstrap.min.js"></script>
+    
     <script type="text/javascript">
- 
-    {# ########## Replace Block ########## #}
-        {% block twilio_setup %}{% endblock %}
-    {# ########## Replace Block ########## #}
 
-      Twilio.Device.ready(function (device) {
-        $("#log").text("Twilioに接続しました。");
-        $("#twilio_message").removeClass("alert-warning alert-danger alert-success alert-info").addClass("alert-success");
-      });
- 
-      Twilio.Device.error(function (error) {
-        $("#log").text("エラー: " + error.message);
-        $("#twilio_message").removeClass("alert-warning alert-danger alert-success alert-info").addClass("alert-danger");
-      });
- 
-      Twilio.Device.connect(function (conn) {
-        $("#log").text("電話がつながりました。");
-        $("#twilio_message").removeClass("alert-warning alert-danger alert-success alert-info").addClass("alert-success");
-      });
- 
-      Twilio.Device.disconnect(function (conn) {
-        $("#log").text("電話が切断されました。");
-        $("#twilio_message").removeClass("alert-warning alert-danger alert-success alert-info").addClass("alert-warning");
-      });
- 
-      Twilio.Device.incoming(function (conn) {
-        $("#log").text(conn.parameters.From + "からの電話です。");
-         $("#twilio_message").removeClass("alert-warning alert-danger alert-success alert-info").addClass("alert-info");
-        // accept the incoming connection and start two-way audio
-        conn.accept();
-      });
- 
-      function call() {
-        // get the phone number to connect the call to
-        params = {"PhoneNumber": $("#number").val()};
-        conn = Twilio.Device.connect(params);
+        $(document).ready(function(){
 
-      }
-      
-      function loginQueue(queue) {
-        params = {"PhoneNumber": queue};
-        Twilio.Device.connect(params);
-      }
-      
-      function hangup() {
-        Twilio.Device.disconnectAll();
-      }
-   
+            {# ########## Replace Block ########## #}
+            {% block twilio_setup %}{% endblock %}
+            {# ########## Replace Block ########## #}
+        
+            var connection=null;
+            var queues = [];
+
+            {# ########## Replace Block ########## #}
+            {% block queues %}{% endblock %}
+            {# ########## Replace Block ########## #}
+
+            $("#call").click(function() {  
+                params = { "PhoneNumber" : $('#number').val()};
+                connection = Twilio.Device.connect(params);
+            });
+            
+            $("#hangup").click(function() {  
+                Twilio.Device.disconnectAll();
+            });
+
+            $("#mute").click(function() {
+                connection.mute();
+            });
+
+            $("#unmute").click(function() {
+                connection.unmute();
+            });
+
+            Twilio.Device.ready(function (device) {
+                $("#log").text("Twilioに接続しました。");
+                $("#twilio_message").removeClass("alert-warning alert-danger alert-success alert-info").addClass("alert-success");
+            });
+
+            Twilio.Device.incoming(function (conn) {
+                $("#log").text(conn.parameters.From + "からの電話です。");
+                $("#twilio_message").removeClass("alert-warning alert-danger alert-success alert-info").addClass("alert-info");
+                if (confirm('Accept incoming call from ' + conn.parameters.From + '?')){
+                    connection=conn;
+                    conn.accept();
+                }
+            });
+
+            Twilio.Device.offline(function (device) {
+                $("#log").text("オフライン: " + error.message);
+                $("#twilio_message").removeClass("alert-warning alert-danger alert-success alert-info").addClass("alert-danger");
+            });
+
+            Twilio.Device.error(function (error) {
+                $("#log").text("エラー: " + error.message);
+                $("#twilio_message").removeClass("alert-warning alert-danger alert-success alert-info").addClass("alert-danger");
+            });
+
+            Twilio.Device.connect(function (conn) {
+                $("#log").text("電話がつながりました。");
+                $("#twilio_message").removeClass("alert-warning alert-danger alert-success alert-info").addClass("alert-success");
+                toggleCallStatus();
+            });
+
+            Twilio.Device.disconnect(function (conn) {
+                $("#log").text("電話が切断されました。");
+                $("#twilio_message").removeClass("alert-warning alert-danger alert-success alert-info").addClass("alert-warning");
+                toggleCallStatus();
+            });
+
+            function toggleCallStatus(){
+                $('#call').toggle();
+                $('#hangup').toggle();
+                $('#number').toggle();
+                $('#muteselect').toggle();
+                $('#queuelist').toggle();
+                $('#dialpadplate').toggle();
+            }
+
+            $.each(['0','1','2','3','4','5','6','7','8','9','star','pound'], function(index, value) { 
+                $('#button' + value).click(function(){ 
+                    if(connection) {
+                        if (value=='star')
+                            connection.sendDigits('*')
+                        else if (value=='pound')
+                            connection.sendDigits('#')
+                        else
+                            connection.sendDigits(value)
+                        return false;
+                    } 
+                    });
+            });
+            
+            $.each(queues, function(index, value) { 
+                $('#queue_' + value).click(function(){ 
+                    params = { "PhoneNumber" : $('#queue_' + value).text()};
+                    connection = Twilio.Device.connect(params);
+                });
+            });
+
+
+        });
+
     </script>
     
   </head>
@@ -96,7 +151,7 @@
                 <div class="navbar-collapse collapse navbar-responsive-collapse">
                     <ul class="nav navbar-nav">
                         <li class="dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">Queue <b class="caret"></b></a>
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" id="queuelist">Queue <b class="caret"></b></a>
                         <ul class="dropdown-menu">
                           <li class="dropdown-header">Select Queue</li>
                             {# ########## Replace Block ########## #}
@@ -104,26 +159,56 @@
                             {# ########## Replace Block ########## #}
                         </ul>
                         </li>
-                        <li><a href="#" onclick="call();">Call</a></li>
-                        <li><a href="#" onclick="hangup();">HangUp</a></li>
-                        <!--
-                            <li class="dropdown">
-                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Mute <b class="caret"></b></a>
-                                <ul class="dropdown-menu">
-                                    <li><a href="#" id="mute">Mute</a></li>
-                                    <li><a href="#" id="unmute">UnMute</a></li>
-                                </ul>
-                            </li>
--->
+                        <li><a href="#" id="call">Call</a></li>
+                        <li><a href="#" id="hangup" style="display:none;">HangUp</a></li>
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" id="muteselect" style="display:none;">Mute <b class="caret"></b></a>
+                            <ul class="dropdown-menu">
+                                <li><a href="#" id="mute">Mute</a></li>
+                                <li><a href="#" id="unmute">UnMute</a></li>
+                            </ul>
+                        </li>
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" id="dialpadplate" style="display:none;">DialPad <b class="caret"></b></a>
+                            <ul class="dropdown-menu">
+                                <li>
+                                <div id="dialpad">
+                                    <table>
+                                    <tr>
+                                    <td><input type="button" value="1" id="button1"></td>
+                                    <td><input type="button" value="2" id="button2"></td>
+                                    <td><input type="button" value="3" id="button3"></td>
+                                    </tr>
+                                    <tr>
+                                    <td><input type="button" value="4" id="button4"></td>
+                                    <td><input type="button" value="5" id="button5"></td>
+                                    <td><input type="button" value="6" id="button6"></td>
+                                    </tr>
+                                    <tr>
+                                    <td><input type="button" value="7" id="button7"></td>
+                                    <td><input type="button" value="8" id="button8"></td>
+                                    <td><input type="button" value="9" id="button9"></td>
+                                    </tr>
+                                    <tr>
+                                    <td><input type="button" value="*" id="buttonstar"></td>
+                                    <td><input type="button" value="0" id="button0"></td>
+                                    <td><input type="button" value="#" id="buttonpound"></td>
+                                    </tr>
+                                    </table>
+                                </div>
+                                </li>
+                            </ul>
+                        </li>
                     </ul>
-                        
                     <form class="navbar-form navbar-left">
                         <input type="text" class="form-control col-lg-8" placeholder="Telephone Number" name="number" id="number">
                     </form>
 
-                        {# ########## Replace Block ########## #}
-                            {% block dropdown_message %}{% endblock %}
-                        {# ########## Replace Block ########## #}
+                    <div class="navbar-collapse collapse navbar-responsive-collapse">
+                        <ul class="nav navbar-nav navbar-right">
+                          <li><a data-toggle="modal" href="#" onClick="window.close(); return false;">閉じる</a></li>
+                        </ul>
+                    </div>
                             
                 </div>
             </div>
@@ -132,54 +217,34 @@
     <div class="container">
 
         <div class="row">
-            <div class="col-md-4">
-                <h1>Runa-CCA</h1>
-                <p class="lead">A Call Center Application for Twilio!</p>
-                <p>Twilio用のコールセンターアプリケーションです。</p>
+            <div class="col-md-12">
                 {# ########## Replace Block ########## #}
                     {% block message %}{% endblock %}
                 {# ########## Replace Block ########## #}
-        </div>
-            <div class="col-md-8">
             </div>
         </div>
+
+<!--
+        <div class="row">
+            <div class="col-md-12">
+                 For Future Release
+            </div>
+        </div>
+-->
 
         <footer>
             <div class="row">
                 <div class="col-lg-12">
                     <hr>
-                    <p>Runa-CCA stands for "<b>Ru</b>toru's <b>N</b>etwork L<b>a</b>boratory - <b>C</b>all <b>C</b>enter <b>A</b>pplication". This is the dedicated version for Twilio.</p>
                     <p>Developed by <a href="https://twitter.com/rutoruz">rutoru</a>. Code released under the <a href="https://github.com/rutoru/Runa-CCA/blob/master/LICENSE">MIT License</a>.</p>
                 </div>
             </div>
         </footer>
 
-        <div class="modal" id="settingModal">
-          <div class="modal-dialog">
-            <div class="modal-content">
-              <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                <h4 class="modal-title">管理画面確認</h4>
-              </div>
-              <div class="modal-body">
-                <p>管理画面を別画面に開きます。よろしいですか？</p>
-              </div>
-              <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary" data-dismiss="modal" onClick="window.open('/runa-cca/conf');">OK</button>
-              </div>
-            </div>
-          </div>
-        </div>
     </div>
                 
-                
-    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
-    <!-- Include all compiled plugins (below), or include individual files as needed -->
-    <script src="/runa-cca/vendor/bootstrap/js/bootstrap.min.js"></script>
+               
   </body>
 
 </html>
 {% endautoescape %}
-

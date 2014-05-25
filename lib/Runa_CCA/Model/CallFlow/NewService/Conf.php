@@ -12,7 +12,7 @@ class Conf {
     /**
      * Constants
      */
-    const QUEUE       = "twilio MiniCC";
+    const QUEUE       = "twilio_MiniCC";
     const INFO_URL    = "/runa-cca/twilio/callflow/newservice/info";
     const MOH_LONG    = "http://com.twilio.sounds.music.s3.amazonaws.com/MARKOVICHAMP-Borghestral.mp3";
     const MOH_SHORT   = "";

@@ -40,6 +40,15 @@
                 );
                 newWin.focus();
         }
+
+        function popup_softphone(url){
+                var newWin2 = window.open(
+                        url,
+                        "softphone",
+                        "width=1000, height=300, location=no, menubar=no, toolbar=no, scrollbars=yes"
+                );
+                newWin2.focus();
+        }
     </script>
     
   </head>
@@ -91,7 +100,7 @@
                     
                     <ul class="nav navbar-nav navbar-right">
                       <li><a href="#" onClick="popup_wb('/runa-cca/report/wallboard')">ウォールボード</a></li>
-                      <li><a data-toggle="modal" href="#softphoneModal">ソフトフォン</a></li>
+                      <li><a href="#" onClick="popup_softphone('/runa-cca/softphone')">ソフトフォン</a></li>
                       <li class="dropdown">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown">{{session.operator_name}}さん<b class="caret"></b></a>
                         <ul class="dropdown-menu">
@@ -134,24 +143,6 @@
                 </div>
             </div>
         </footer>
-
-        <div class="modal" id="softphoneModal">
-          <div class="modal-dialog">
-            <div class="modal-content">
-              <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                <h4 class="modal-title">ソフトフォン起動確認</h4>
-              </div>
-              <div class="modal-body">
-                <p>ソフトフォンを別画面に開きます。よろしいですか？</p>
-              </div>
-              <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary" data-dismiss="modal" onClick="window.open('/runa-cca/softphone');">OK</button>
-              </div>
-            </div>
-          </div>
-        </div>
             
     </div>
                 
