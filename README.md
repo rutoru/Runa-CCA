@@ -18,7 +18,7 @@ Runa-CCAは、[Twilio](http://twilio.kddi-web.com)を使った、やや本格的
 ### 機能概要 ###
 [Twilio](http://twilio.kddi-web.com) を使ったコールセンターシステムで、以下の機能を実装しています。
 
-+ Webクライアント
++ ソフトフォン
     + Twilioソフトフォン
         + ログイン認証（SystemAdmin,Supervisor,Operator権限）
         + 発信・着信
@@ -45,6 +45,7 @@ Runa-CCAは、[Twilio](http://twilio.kddi-web.com)を使った、やや本格的
     + 音声ガイダンス
     + キューイング（待ち順番アナウンス付き）
     + ヒストリカルレポート収集
+
 + レポート
     + ウォールボード（オペレータの所属するキュー情報を表示）（Version 1.1〜）
 
