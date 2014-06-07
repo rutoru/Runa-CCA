@@ -149,6 +149,25 @@ CREATE TABLE statuscallback_data
 ENGINE InnoDB;
 
 /**
+ * Customer Table
+ *
+ * @author rutoru
+ * @package Runa-CCA
+ */
+CREATE TABLE customer
+(
+`customer_id` varchar(20) PRIMARY KEY NOT NULL UNIQUE,
+`last_name` varchar(32),
+`first_name` varchar(32),
+`telnum` varchar(20),
+`contact_record` text,
+INDEX (last_name),
+INDEX (first_name),
+INDEX (telnum)
+)
+ENGINE InnoDB;
+
+/**
  * Sample Data
  * Operator Id is 'admin', Password is 'test'.
  *

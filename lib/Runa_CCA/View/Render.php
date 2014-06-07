@@ -186,22 +186,22 @@ class Render {
                 
                 break;
 
-                // PASSWORDCHANGE
-                case "PASSWORDCHANGE":
+            // PASSWORDCHANGE
+            case "PASSWORDCHANGE":
 
-                    $this->app->render(
-                        'Config/pass_change.twig', 
-                        [
-                            'operator_id'         => $args[1],  // Operator ID
-                            'validation'          => $args[2],  // Result of Validation
-                            'flag'                => $args[3],  // Flag (Update or not)
-                            'alert_level'         => $args[4],  // Alert Level
-                            'alert_title'         => $args[5],  // Alert Title
-                            'alert_msg'           => $args[6],  // Alert Message
-                        ]
-                    ); 
+                $this->app->render(
+                    'Config/pass_change.twig', 
+                    [
+                        'operator_id'         => $args[1],  // Operator ID
+                        'validation'          => $args[2],  // Result of Validation
+                        'flag'                => $args[3],  // Flag (Update or not)
+                        'alert_level'         => $args[4],  // Alert Level
+                        'alert_title'         => $args[5],  // Alert Title
+                        'alert_msg'           => $args[6],  // Alert Message
+                    ]
+                ); 
 
-                    break;
+                break;
                 
             // WALLBOARD
             case "WALLBOARD":
@@ -212,6 +212,60 @@ class Render {
                         'wallboards'              => $args[1],    // Wallboard Object Array
                     ]
                 );  
+                
+                break;
+
+            // Customer List
+            case "CUSTOMERLIST":
+                
+                // Twig File Name
+                $twigFileName = 'Customer/customerlist.twig';
+                
+                // Replace the file name if the request is Ajax.
+                // http://davidwalsh.name/detect-ajax
+                if(!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') {
+                    $twigFileName = 'Customer/customerlist_ajax.twig';
+                }
+                
+                $this->app->render(
+                    $twigFileName, 
+                    [
+                        'customers'           => $args[1],  // Customer Object Array
+                        'validation'          => $args[2],  // Result of Validation
+                        'alert_level'         => $args[3],  // Alert Level
+                        'alert_title'         => $args[4],  // Alert Title
+                        'alert_msg'           => $args[5],  // Alert Message
+                    ]
+                );  
+                
+                break;
+            
+            // Customer New
+            case "CUSTOMERNEW":
+                
+                // Twig File Name
+                $twigFileName = 'Customer/customernew.twig';
+                
+                // Replace the file name if the request is Ajax.
+                // http://davidwalsh.name/detect-ajax
+                if(!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') {
+                    $twigFileName = 'Customer/customernew_ajax.twig';
+                }
+                
+                $this->app->render(
+                    $twigFileName, 
+                    [
+                        'customers'           => $args[1],  // Customer List
+                        'validation'          => $args[2],  // Result of Validation
+                        'flag'                => $args[3],  // Flag (Update or not)
+                        'alert_level'         => $args[4],  // Alert Level
+                        'alert_title'         => $args[5],  // Alert Title
+                        'alert_msg'           => $args[6],  // Alert Message
+                    ]
+                );  
+                
+                break;
+
             
         }
     }

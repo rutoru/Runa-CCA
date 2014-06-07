@@ -1,0 +1,72 @@
+{# 
+/**
+ * Customer New Template
+ *
+ * @author rutoru
+ * @package Runa-CCA
+ */
+#}
+{% extends "Config/config_frame.twig" %}
+{% block message %}
+{% autoescape true %}
+<form class="well form-horizontal" action="/runa-cca/customer/customeradd" method="POST">
+  <fieldset>
+    <div class="form-group">
+      <label for="operator_id" class="col-lg-2 control-label">お客様ID</label>
+      <div class="col-lg-10">
+        {% if flag == "CHANGE" %}
+        <input type="text" class="form-control" name="customer_id" placeholder="お客様ID" value="{{customers.customer_id}}" readonly="readonly">
+        {{validation.customer_id}}
+        {% else %}
+        <input type="text" class="form-control" name="customer_id" placeholder="お客様ID" value="{{customers.customer_id}}" required>
+        {{validation.customer_id}}
+        {% endif %}
+      </div>
+    </div>
+    <div class="form-group">
+      <label for="customer_name" class="col-lg-2 control-label">お客様名字</label>
+      <div class="col-lg-10">
+        <input type="text" class="form-control" name="last_name" placeholder="お客様名字" required value="{{customers.last_name}}">
+        {{validation.last_name}}
+      </div>
+    </div>
+    <div class="form-group">
+      <label for="customer_name" class="col-lg-2 control-label">お客様名前</label>
+      <div class="col-lg-10">
+        <input type="text" class="form-control" name="first_name" placeholder="お客様名前" required value="{{customers.first_name}}">
+        {{validation.first_name}}
+      </div>
+    </div>
+    <div class="form-group">
+      <label for="telnum" class="col-lg-2 control-label">電話番号</label>
+      <div class="col-lg-10">
+        <input type="text" class="form-control" name="telnum" placeholder="お客様電話番号" required value="{{customers.telnum}}">
+        {{validation.telnum}}
+      </div>
+    </div>
+    <div class="form-group">
+      <label for="contact_record" class="col-lg-2 control-label">応対履歴</label>
+      <div class="col-lg-10">
+        <textarea class="form-control" rows="5" id="contact_record" name="contact_record" placeholder="応対履歴">{{customers.contact_record}}</textarea>
+        {{validation.contact_record}}
+      </div>
+    </div>
+      <div class="form-group">
+      <div class="col-lg-10 col-lg-offset-2">
+        {% if flag == "CHANGE" %}
+        <button type="submit" class="btn btn-primary" name="change" value="change">変更</button>
+        <button type="submit" class="btn btn-danger" name="delete" value="delete">削除</button>
+        <input type="hidden" name="tag" value="CHANGE">
+        {% else %}
+        <button type="submit" class="btn btn-primary" name="regist" value="regist">登録</button>
+        {% endif %}
+      </div>
+    </div>
+  </fieldset>
+</form>
+<hr/>
+<form action="/runa-cca/customer/customerlist" method="POST" id="customerlistForm">
+    <button type="submit" id="addCustomer" class="btn btn-default" name="add" value="add">お客様一覧に戻る</button>
+</form>
+{% endautoescape %}
+{% endblock message %}

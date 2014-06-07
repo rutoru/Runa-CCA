@@ -36,10 +36,17 @@ class Route{
 
         // Reporting
         // Wallboard
-        $app->map ('/report/wallboard',  function(){\Runa_CCA\Controller\Report::portal("WALLBOARD");})->via('GET', 'POST');
+        $app->map ('/report/wallboard',function(){\Runa_CCA\Controller\Report::portal("WALLBOARD");})->via('GET', 'POST');
         
         // Softphone
         $app->map ('/softphone',       function(){\Runa_CCA\Controller\Softphone::portal();})->via('GET', 'POST');
+
+        // Small CRM
+        $app->map ('/customer/customerlist',  function(){\Runa_CCA\Controller\Customer::portal("LISTCUSTOMER");})->via('GET', 'POST');
+        $app->map ('/customer/customernew',   function(){\Runa_CCA\Controller\Customer::portal("NEWCUSTOMER");})->via('GET', 'POST');
+        $app->post('/customer/customeradd',   function(){\Runa_CCA\Controller\Customer::portal("MNGCUSTOMER");});
+        $app->post('/customer/customermod',   function(){\Runa_CCA\Controller\Customer::portal("MODCUSTOMER");});
+        $app->post('/customer/customersearch',function(){\Runa_CCA\Controller\Customer::portal("SEARCHCUSTOMER");});
         
         // Twilio
         // TwiML for Operators(Client Application)

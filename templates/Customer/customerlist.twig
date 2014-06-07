@@ -1,0 +1,68 @@
+{# 
+/**
+ * Customer List Template
+ *
+ * @author rutoru
+ * @package Runa-CCA
+ */
+#}
+{% extends "Config/config_frame.twig" %}
+{% block message %}
+{% autoescape true %}
+<form class="well form-inline" action="/runa-cca/customer/customersearch" method="POST" id="customerSearchForm">
+    <input type="text" class="form-control" name="customer_id" placeholder="お客様ID" value="">
+    <input type="text" class="form-control" name="last_name" placeholder="お客様名字" value="">
+    <input type="text" class="form-control" name="first_name" placeholder="お客様名前" value="">
+    <input type="text" class="form-control" name="telnum" placeholder="お客様電話番号" value="">
+    <button type="submit" class="btn btn-primary" name="search" value="search">検索</button>
+</form>
+{# If there is no customer data. #}
+{% if customers|length == 0 %}
+    <div class="alert alert-dismissable alert-warning" id="sql_message">
+    {% if validation|length == 0 %}
+        <p>顧客情報がありません。</p>
+    {% else %}
+        <p>検索キーに誤りがあります。</p>
+        <p>{{validation.customer_id}}</p>
+        <p>{{validation.last_name}}</p>
+        <p>{{validation.first_name}}</p>
+        <p>{{validation.telnum}}</p>
+    {% endif %}
+    </div>
+    <hr/>
+    <form action="/runa-cca/customer/customernew" method="POST" id="customerAddForm">
+        <button type="submit" id="addCustomer" class="btn btn-default" name="add" value="add">お客様情報新規登録</button>
+    </form>
+{% else %}
+<form action="/runa-cca/customer/customermod" method="POST" id="customerlistForm">
+    <table class="table table-striped table-hover ">
+      <thead>
+        <tr>
+            <th>選択</th>
+            <th>お客様名</th>
+            <th>お客様電話番号</th>
+            <th>キュー</th>
+            <th>お客様発信先番号</th>
+        </tr>
+      </thead>
+      <tbody>
+            {% for customer in customers %}
+            <tr>
+                <td><input type="radio" id="customer_id" name="customer_id" value="{{customer.customer_id}}" required></td>
+                <td>{{customer.last_name}} {{customer.first_name}}</td>
+                <td>{{customer.telnum}}</td>
+                <td>{{customer.queue_id}}</td>
+                <td>{{customer.dnis}}</td>
+            </tr>
+            {% endfor %}
+      </tbody>
+    </table>
+    <button type="submit" id="displayCustomer" class="btn btn-primary" name="disp" value="disp">表示</button>
+</form>
+<hr/>
+<form action="/runa-cca/customer/customernew" method="POST" id="customerAddForm">
+    <button type="submit" id="addCustomer" class="btn btn-default" name="add" value="add">お客様情報新規登録</button>
+</form>
+{% endif %}
+{% endautoescape %}
+{% endblock message %}

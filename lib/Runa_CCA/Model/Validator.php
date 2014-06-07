@@ -58,6 +58,79 @@ class Validator extends \Respect\Validation\Validator {
     }
 
     /**
+     * validateCustomer
+     * 
+     * @param String[] $params User Input Data
+     * @return TwiMLApp Token
+     */
+    static function validateCustomer(array $params){
+
+        $error_list = [];
+        
+        if(!static::notEmpty()->alnum()->length(1,20)->validate($params["customer_id"])){
+            $error_list["customer_id"] = "20字以内の半角の英数文字のみにしてください。";
+        }
+        
+        if(!static::notEmpty()->length(1,32)->validate($params["last_name"])){
+            $error_list["last_name"] = "全角16字以内半角32字以内にしてください。";
+        }
+
+        if(!static::notEmpty()->length(1,32)->validate($params["first_name"])){
+            $error_list["first_name"] = "全角16字以内半角32字以内にしてください。";
+        }
+                
+        if(!static::notEmpty()->phone()->length(1,15)->validate($params["telnum"])){
+            $error_list["telnum"] = "国番号付きでE.164形式にしてください。";
+        }
+        
+        if(!static::length(null,65535)->validate($params["contact_record"])){
+            $error_list["contact_record"] = "半角65535以内にしてください。";
+        }
+
+        // Pass password check because add operators function doesn't have tag parameter. 
+        if(isset($params["tag"])){
+            if(!static::notEmpty()->alnum()->length(1,10)->validate($params["tag"])){
+                $error_list["tag"] = "タグがありません。";
+            }
+        }
+        
+        return $error_list;
+        
+    }
+
+    
+    /**
+     * validateCustomerSearch
+     * 
+     * @param String[] $params User Input Data
+     * @return TwiMLApp Token
+     */
+    static function validateCustomerSearch(array $params){
+
+        $error_list = [];
+        
+        if(!static::alnum()->length(0,20)->validate($params["customer_id"])){
+            $error_list["customer_id"] = "お客様IDは20字以内の半角の英数文字のみにしてください。";
+        }
+        
+        if(!static::length(0,32)->validate($params["last_name"])){
+            $error_list["last_name"] = "お客様名字は全角16字以内半角32字以内にしてください。";
+        }
+
+        if(!static::length(0,32)->validate($params["first_name"])){
+            $error_list["first_name"] = "お客様名前は全角16字以内半角32字以内にしてください。";
+        }
+                
+        if(!static::length(0,15)->validate($params["telnum"])){
+            $error_list["telnum"] = "電話番号は半角15文字以内にしてください。";
+        }
+                
+        return $error_list;
+        
+    }
+
+    
+    /**
      * validateQueue
      * 
      * @param String[] $params User Input Data

@@ -25,7 +25,7 @@
     <![endif]-->
     
     <script type="text/javascript"
-      src="//static.twilio.com/libs/twiliojs/1.1/twilio.min.js"></script>
+      src="//static.twilio.com/libs/twiliojs/1.2/twilio.min.js"></script>
     
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
@@ -33,7 +33,7 @@
     <script src="/runa-cca/vendor/bootstrap/js/bootstrap.min.js"></script>
     
     <script type="text/javascript">
-
+                
         $(document).ready(function(){
 
             {# ########## Replace Block ########## #}
@@ -51,7 +51,48 @@
                 params = { "PhoneNumber" : $('#number').val()};
                 connection = Twilio.Device.connect(params);
             });
+
+            $("#infoCustomer").click(function() {  
+                
+                $.ajax({
+                    url: '/runa-cca/customer/customerlist',
+                    type: 'POST',
+                    data: {
+                        id : connection.parameters.CallSid
+                    },
+                    dataType: 'html'
+                })
+                .done(function( data ) {
+                    $("#customerlist").html(data);
             
+                    $("#log").text("お客様情報をポップアップします。");
+                    $("#twilio_message").removeClass("alert-warning alert-danger alert-success alert-info").addClass("alert-success");
+                })
+                .fail(function( data ) {
+                    $("#log").text("エラーが発生しました。システム管理者に連絡してください。");
+                    $("#twilio_message").removeClass("alert-warning alert-danger alert-success alert-info").addClass("alert-danger");
+                })
+        
+            });
+
+            $("#listCustomer").click(function() {  
+                
+                $.ajax({
+                    url: '/runa-cca/customer/customerlist',
+                    type: 'POST',
+                    dataType: 'html'
+                })
+                .done(function( data ) {
+                    $("#customerlist").html(data);
+                })
+                .fail(function( data ) {
+                    $("#log").text("エラーが発生しました。システム管理者に連絡してください。");
+                    $("#twilio_message").removeClass("alert-warning alert-danger alert-success alert-info").addClass("alert-danger");
+                })
+        
+            });
+                
+    
             $("#hangup").click(function() {  
                 Twilio.Device.disconnectAll();
             });
@@ -62,6 +103,12 @@
 
             $("#unmute").click(function() {
                 connection.unmute();
+            });
+            
+            $("#clear").click(function() {
+                $("#log").text("画面をクリアしました。");
+                $("#twilio_message").removeClass("alert-warning alert-danger alert-success alert-info").addClass("alert-success");
+                $("#customerlist").html(null);
             });
 
             Twilio.Device.ready(function (device) {
@@ -107,6 +154,7 @@
                 $('#muteselect').toggle();
                 $('#queuelist').toggle();
                 $('#dialpadplate').toggle();
+                $('#infoCustomer').toggle();
             }
 
             $.each(['0','1','2','3','4','5','6','7','8','9','star','pound'], function(index, value) { 
@@ -130,7 +178,6 @@
                 });
             });
 
-
         });
 
     </script>
@@ -151,48 +198,48 @@
                 <div class="navbar-collapse collapse navbar-responsive-collapse">
                     <ul class="nav navbar-nav">
                         <li class="dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" id="queuelist">Queue <b class="caret"></b></a>
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" id="queuelist">受付可（キュー）<b class="caret"></b></a>
                         <ul class="dropdown-menu">
-                          <li class="dropdown-header">Select Queue</li>
+                          <li class="dropdown-header">キュー選択</li>
                             {# ########## Replace Block ########## #}
                                 {% block twilio_queues %}{% endblock %}
                             {# ########## Replace Block ########## #}
                         </ul>
                         </li>
-                        <li><a href="#" id="call">Call</a></li>
-                        <li><a href="#" id="hangup" style="display:none;">HangUp</a></li>
+                        <li><a href="#" id="call">発信</a></li>
+                        <li><a href="#" id="hangup" style="display:none;">切断</a></li>
                         <li class="dropdown">
-                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" id="muteselect" style="display:none;">Mute <b class="caret"></b></a>
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" id="muteselect" style="display:none;">ミュート <b class="caret"></b></a>
                             <ul class="dropdown-menu">
-                                <li><a href="#" id="mute">Mute</a></li>
-                                <li><a href="#" id="unmute">UnMute</a></li>
+                                <li><a href="#" id="mute">ミュート</a></li>
+                                <li><a href="#" id="unmute">ミュート解除</a></li>
                             </ul>
                         </li>
                         <li class="dropdown">
-                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" id="dialpadplate" style="display:none;">DialPad <b class="caret"></b></a>
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" id="dialpadplate" style="display:none;">ダイヤルパッド <b class="caret"></b></a>
                             <ul class="dropdown-menu">
                                 <li>
-                                <div id="dialpad">
+                                <div id="dialpad" class="btn-group">
                                     <table>
                                     <tr>
-                                    <td><input type="button" value="1" id="button1"></td>
-                                    <td><input type="button" value="2" id="button2"></td>
-                                    <td><input type="button" value="3" id="button3"></td>
+                                    <td><input type="button" value="1" id="button1" class="btn btn-default"></td>
+                                    <td><input type="button" value="2" id="button2" class="btn btn-default"></td>
+                                    <td><input type="button" value="3" id="button3" class="btn btn-default"></td>
                                     </tr>
                                     <tr>
-                                    <td><input type="button" value="4" id="button4"></td>
-                                    <td><input type="button" value="5" id="button5"></td>
-                                    <td><input type="button" value="6" id="button6"></td>
+                                    <td><input type="button" value="4" id="button4" class="btn btn-default"></td>
+                                    <td><input type="button" value="5" id="button5" class="btn btn-default"></td>
+                                    <td><input type="button" value="6" id="button6" class="btn btn-default"></td>
                                     </tr>
                                     <tr>
-                                    <td><input type="button" value="7" id="button7"></td>
-                                    <td><input type="button" value="8" id="button8"></td>
-                                    <td><input type="button" value="9" id="button9"></td>
+                                    <td><input type="button" value="7" id="button7" class="btn btn-default"></td>
+                                    <td><input type="button" value="8" id="button8" class="btn btn-default"></td>
+                                    <td><input type="button" value="9" id="button9" class="btn btn-default"></td>
                                     </tr>
                                     <tr>
-                                    <td><input type="button" value="*" id="buttonstar"></td>
-                                    <td><input type="button" value="0" id="button0"></td>
-                                    <td><input type="button" value="#" id="buttonpound"></td>
+                                    <td><input type="button" value="*" id="buttonstar" class="btn btn-default"></td>
+                                    <td><input type="button" value="0" id="button0" class="btn btn-default"></td>
+                                    <td><input type="button" value="#" id="buttonpound" class="btn btn-default"></td>
                                     </tr>
                                     </table>
                                 </div>
@@ -203,10 +250,12 @@
                     <form class="navbar-form navbar-left">
                         <input type="text" class="form-control col-lg-8" placeholder="Telephone Number" name="number" id="number">
                     </form>
-
                     <div class="navbar-collapse collapse navbar-responsive-collapse">
                         <ul class="nav navbar-nav navbar-right">
-                          <li><a data-toggle="modal" href="#" onClick="window.close(); return false;">閉じる</a></li>
+                            <li><a href="#" id="infoCustomer" style="display:none;"><strong>お客様情報ポップアップ</strong></a></li>
+                            <li><a href="#" id="listCustomer">お客様情報一覧</a></li>
+                            <li><a href="#" id="clear">画面クリア</a></li>
+                            <li><a data-toggle="modal" href="#" onClick="window.close(); return false;">閉じる</a></li>
                         </ul>
                     </div>
                             
@@ -224,18 +273,20 @@
             </div>
         </div>
 
-<!--
         <div class="row">
-            <div class="col-md-12">
-                 For Future Release
+            <div class="col-md-12" id="customerSearch">
             </div>
         </div>
--->
+
+        <div class="row">
+            <div class="col-md-12" id="customerlist">
+            </div>
+        </div>
 
         <footer>
             <div class="row">
                 <div class="col-lg-12">
-                    <hr>
+                    <hr/>
                     <p>Developed by <a href="https://twitter.com/rutoruz">rutoru</a>. Code released under the <a href="https://github.com/rutoru/Runa-CCA/blob/master/LICENSE">MIT License</a>.</p>
                 </div>
             </div>

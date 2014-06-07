@@ -44,8 +44,7 @@
         function popup_softphone(url){
                 var newWin2 = window.open(
                         url,
-                        "softphone",
-                        "width=1000, height=300, location=no, menubar=no, toolbar=no, scrollbars=yes"
+                        "softphone"
                 );
                 newWin2.focus();
         }
@@ -83,6 +82,13 @@
                                 <li><a href="/runa-cca/conf/queuenew">キュー追加</a></li>
                             </ul>
                         </li>
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">お客様管理<b class="caret"></b></a>
+                            <ul class="dropdown-menu">
+                                <li><a href="/runa-cca/customer/customerlist">お客様一覧</a></li>
+                                <li><a href="/runa-cca/customer/customernew">お客様追加</a></li>
+                            </ul>
+                        </li>
                     </ul>
                     
                     {# Supervisor #}
@@ -106,7 +112,7 @@
                         <ul class="dropdown-menu">
                           <li><a data-toggle="modal" href="/runa-cca/self/passchgdisp">パスワード変更</a></li>
                           <li class="divider"></li>
-                          <li><a href="/runa-cca/logout">Logout</a></li>
+                          <li><a href="/runa-cca/logout">ログアウト</a></li>
                         </ul>
                       </li>
                     </ul>
@@ -116,16 +122,15 @@
       
      <div class="container">
         <div class="row">
-            <div class="col-md-4">
-                <h1>Runa-CCA</h1>
-                <p class="lead">A Call Center Application for Twilio!</p>
-                <p>Twilio用のコールセンターアプリケーションです。</p>
+            <div class="col-md-12">
                 <div class="alert alert-dismissable {{alert_level}}" id="config_message_back">
-                <H4>{{alert_title}}</H4>
-                    <p id = "config_message">{{alert_msg}}</p>
+                <p id = "config_message">{{alert_msg}}</p>
                 </div>
             </div>
-            <div class="col-md-8">
+        </div>
+                
+        <div class="row">
+            <div class="col-md-12">
                 <div id='contents'>
                 {# ########## Replace Block ########## #}
                     {% block message %}{% endblock %}
@@ -137,8 +142,7 @@
         <footer>
             <div class="row">
                 <div class="col-lg-12">
-                    <hr>
-                    <p>Runa-CCA stands for "<b>Ru</b>toru's <b>N</b>etwork L<b>a</b>boratory - <b>C</b>all <b>C</b>enter <b>A</b>pplication". This is the dedicated version for Twilio.</p>
+                    <hr/>
                     <p>Developed by <a href="https://twitter.com/rutoruz">rutoru</a>. Code released under the <a href="https://github.com/rutoru/Runa-CCA/blob/master/LICENSE">MIT License</a>.</p>
                 </div>
             </div>

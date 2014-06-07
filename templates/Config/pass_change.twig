@@ -8,43 +8,42 @@
 #}
 {% extends "Config/config_frame.twig" %}
 {% block message %}
-    {% autoescape true %}
+{% autoescape true %}
+{% if flag == "ERROR" %}
+    {{validation.password}}
+{% endif %}
+<form class="well form-horizontal" action="/runa-cca/conf/passchg" method="POST">
+  <fieldset>
+    <div class="form-group">
+      <label for="operator_id" class="col-lg-2 control-label">パスワード</label>
+      <div class="col-lg-10">
+        <input type="password" class="form-control" name="password1" placeholder="パスワード" required>
+        {% if flag == "ERROR" %}
+            {{validation.password1}}
+        {% endif %}
+      </div>
+      </div>
+    <div class="form-group">
+      <label for="operator_id" class="col-lg-2 control-label">再入力</label>
+      <div class="col-lg-10">
+        <input type="password" class="form-control" name="password2" placeholder="パスワード再入力" required>
+        {% if flag == "ERROR" %}
+            {{validation.password2}}
+        {% endif %}
+      </div>
+    </div>
+    <div class="form-group">
+      <div class="col-lg-10 col-lg-offset-2">
+        <input type="hidden" name="operator_id" value="{{operator_id}}">
+        <button type="submit" class="btn btn-primary" name="change" value="change">変更</button>
+      </div>
+    </div>
+  </fieldset>
+</form>
+<hr/>
+<form action="/runa-cca/conf/oplist" method="POST" id="opListForm">
+    <button type="submit" id="listOperator" class="btn btn-default" name="list" value="list">オペレータ一覧に戻る</button>
+</form>
 
-        <div class="page-header" id="banner">
-            <div class="row">
-                <div class="col-lg-12">
-                    <h1>パスワード変更</h1>
-                        {% if flag == "ERROR" %}
-                            {{validation.password}}
-                        {% endif %}
-                    <form class="form-horizontal" action="/runa-cca/conf/passchg" method="POST">
-                      <fieldset>
-                        <div class="form-group">
-                          <label for="operator_id" class="col-lg-2 control-label">パスワード</label>
-                          <div class="col-lg-10">
-                            <input type="password" class="form-control" name="password1" placeholder="パスワード" required>
-                            {% if flag == "ERROR" %}
-                                {{validation.password1}}
-                            {% endif %}
-                          </div>
-                          <label for="operator_id" class="col-lg-2 control-label">再入力</label>
-                          <div class="col-lg-10">
-                            <input type="password" class="form-control" name="password2" placeholder="パスワード再入力" required>
-                            {% if flag == "ERROR" %}
-                                {{validation.password2}}
-                            {% endif %}                          </div>
-                        </div>
-                        <div class="form-group">
-                          <div class="col-lg-10 col-lg-offset-2">
-                            <input type="hidden" name="operator_id" value="{{operator_id}}">
-                            <button type="submit" class="btn btn-primary" name="change" value="change">変更</button>
-                          </div>
-                        </div>
-                      </fieldset>
-                    </form>
-                </div>
-            </div>
-        </div>
-                            
-    {% endautoescape %}
+{% endautoescape %}
 {% endblock message %}

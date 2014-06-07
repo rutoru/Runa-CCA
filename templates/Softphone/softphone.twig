@@ -10,7 +10,7 @@
 
 {% block twilio_setup %}
     {% autoescape true %} 
-        Twilio.Device.setup("{{twilio_token}}");
+        Twilio.Device.setup("{{twilio_token}}",{ debug: true, rtc: false });
     {% endautoescape %}
 {% endblock twilio_setup %}
 
